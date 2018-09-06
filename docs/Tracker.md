@@ -36,7 +36,9 @@ d) Although the primary server declaration can be solved, IF the tracker returns
 
 ### 2. Player crashes and immediately tries to rejoin
 a) Player X crashes
+
 b) Someone pings X and informs the server that X is dead
+
 c) In the meanwhile X contacts the tracker again, saying it wants to rejoin. But X has not been yet removed from the Tracker's player list. 
 #### Solution
 - Tracker doesn't decide unique Player ID or not?
