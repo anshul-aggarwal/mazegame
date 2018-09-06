@@ -26,9 +26,13 @@
 ## Issues
 ### 1. Race Condition when first player joins
 
-a) Player A asks tracker about basicGameInfo(). It receives the reply saying no players present. 
+a) Player A asks tracker about basicGameInfo(). It receives the reply saying no players present.
+
 b) Player B also asks tracker at about same time (Before Player A has registered)
+
 c) Player A calls add method and declares itself as primary server. Also at the same time, Player B call add method on tracker and declares itself as primary server.
+
+d) Although the primary server declaration can be solved, IF the tracker returns the list of servers even while calling Add. However, if both the initial players have same Player ID, it will be a problem.
 
 ### 2. Player crashes and immediately tries to rejoin
 a) Player X crashes
