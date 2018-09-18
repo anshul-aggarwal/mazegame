@@ -26,3 +26,14 @@ However,
 Obj stub = (Obj) UnicastRemoteObject.exportObject(a, port);
 ```
 This creates a stub object *(It's still object a, but with additional details of how to communicate on the port provided)*. Now if do, ```tracker.add(stub)```, this stub will be registerd on tracker, along with the hidden code of how to communicate with this object on the port provided. Thus making communication super easy to implement.
+
+## Video [(Click here)](Video/2018-09-18%20at%2023-11-10.mp4)
+
+In the video,
+ 1. Compiled Java files
+ 2. Started rmiregistry
+ 3. Started Tracker with ```port 9090```. This port was used to create the stub object of Tracker. Registered this stub object with rmiregistry.
+ 4. Started first instance of Game, with ```playerName: AB``` & ```port: 9091```. This port was used to create stub. This player object was then added to list Of Players maintained inside Tracker (whose stub was obtained using rmiregistry).
+ 5. Started second instance of Game, with ```playerName: CD``` & ```port: 9092```. Remaining steps same as above. However, when CD called the ```tracker.add()```, it received a list of player stubs which had AB and itself in it. 
+ NOTE: AB has no idea about CD. 
+ 6. CD invoked ```getPlayerName()``` on AB and itself. Do note, that AB's game instance printed something when its function was invoked.
