@@ -37,3 +37,9 @@ In the video,
  5. Started second instance of Game, with ```playerName: CD``` & ```port: 9092```. Remaining steps same as above. However, when CD called the ```tracker.add()```, it received a list of player stubs which had AB and itself in it. 
  NOTE: AB has no idea about CD. 
  6. CD invoked ```getPlayerName()``` on AB and itself. Do note, that AB's game instance printed something when its function was invoked.
+
+## [UnicastRemoteObject](https://docs.oracle.com/javase/8/docs/api/java/rmi/server/UnicastRemoteObject.html)
+```public static Remote exportObject(Remote obj,int port) throws RemoteException```
+
+Exports the remote object to make it available to receive incoming calls, using the particular supplied port.
+The object is exported with a `server socket` created using the RMISocketFactory class.
