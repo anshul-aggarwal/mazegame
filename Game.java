@@ -25,7 +25,7 @@ public class Game {
             /*
             Register Player stub with Tracker. Also add the List of Player Stubs obtained from tracker to the current player
              */
-            Set<IPlayer> players = tracker.add(stub);
+            Set<IPlayer> players = tracker.addPlayer(stub);
             player.addPlayers(players);
 
             /*
