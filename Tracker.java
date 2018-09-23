@@ -14,8 +14,7 @@ public class Tracker implements ITracker {
     private final MazeDimensions mazeDimensions;
     private Set<IPlayer> players;
 
-    private static final int RMI_REGISTRY_PORT = 1099;
-
+    public static final int RMI_REGISTRY_PORT = 1099;
     public static final String TRACKER_STUB_REGISTRY_KEY = "Tracker";
 
     /**
@@ -40,12 +39,11 @@ public class Tracker implements ITracker {
     }
 
     @Override
-    public synchronized boolean addFirstPlayer(IPlayer player) throws RemoteException {
+    public synchronized Set<IPlayer> addFirstPlayer(IPlayer player) throws RemoteException {
         if (this.players.size() == 0) {
             this.players.add(player);
-            return true;
         }
-        return false;
+        return this.players;
     }
 
     @Override

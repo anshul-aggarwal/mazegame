@@ -24,7 +24,7 @@ public interface ITracker extends Remote {
      * @return
      * @throws RemoteException
      */
-    boolean addFirstPlayer(IPlayer player) throws RemoteException;
+    Set<IPlayer> addFirstPlayer(IPlayer player) throws RemoteException;
 
     /**
      *

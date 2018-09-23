@@ -12,20 +12,22 @@ public interface IPlayer extends Remote {
 
     /**
      *
-     * @param players
+     * @param gameState
      */
-    void addPlayers(Set<IPlayer> players) throws RemoteException;
+    void setGameState(GameState gameState) throws RemoteException;
 
     /**
      *
+     * @param playerStub
+     * @return
      * @throws RemoteException
      */
-    void printPlayerNames() throws RemoteException;
+    GameState registerPlayer(IPlayer playerStub) throws RemoteException;
 
     /**
      *
      * @return
      * @throws RemoteException
      */
-    ITracker getTracker() throws RemoteException;
+    ITracker getTrackerStub() throws RemoteException;
 }

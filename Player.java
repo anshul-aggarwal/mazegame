@@ -1,45 +1,49 @@
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Player implements IPlayer, Serializable {
 
     private final String playerName;
-    private final ITracker tracker;
-    private Set<IPlayer> players;
+    private final ITracker trackerStub;
 
-    public Player(String name, ITracker tracker) {
-        this.playerName = name;
-        this.tracker = tracker;
+
+    private GameState gameState;
+
+    public Player(String playerName, ITracker trackerStub) {
+        this.playerName = playerName;
+        this.trackerStub = trackerStub;
+
     }
 
     @Override
     public String getPlayerName() {
-        System.out.println("\nHello, I am " + playerName + ". My function getPlayerName was called.");
         return playerName;
     }
 
     @Override
-    public void addPlayers(Set<IPlayer> players) {
-        if (this.players == null) {
-            this.players = new HashSet<>();
-        }
-        this.players.addAll(players);
+    public void setGameState(GameState gameState) throws RemoteException {
+        this.gameState = gameState;
+    }
+
+    private void setPlayers(Set<IPlayer> players) {
+        this.gameState.setPlayers(players);
     }
 
     @Override
-    public void printPlayerNames() throws RemoteException {
-        if (players != null && !players.isEmpty()) {
-            for (IPlayer p: players) {
-                System.out.println(p.getPlayerName());
-            }
+    public GameState registerPlayer(IPlayer playerStub) throws RemoteException {
+        if (this.isPrimary() || this.isBackup()) {
+            this.setPlayers(trackerStub.addPlayer(playerStub));
+            /*
+                TODO: Logic to randomly assign a block in maze
+             */
         }
+        return this.gameState;
     }
 
     @Override
-    public ITracker getTracker() {
-        return tracker;
+    public ITracker getTrackerStub() {
+        return trackerStub;
     }
 
     @Override
@@ -49,10 +53,17 @@ public class Player implements IPlayer, Serializable {
                 return true;
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
         }
         return false;
     }
 
+    private boolean isPrimary() {
+        IPlayer primary = this.gameState.getPrimary();
+        return primary != null && this.equals(primary);
+    }
 
+    private boolean isBackup() {
+        IPlayer backup = this.gameState.getBackup();
+        return backup != null && this.equals(backup);
+    }
 }
