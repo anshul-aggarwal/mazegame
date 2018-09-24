@@ -59,6 +59,11 @@ public class Game {
         }
 
         /**
+         * Pinging util
+         *
+         */
+
+        /**
          * Play the game
          */
         try {

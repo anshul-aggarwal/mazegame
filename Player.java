@@ -13,7 +13,6 @@ public class Player implements IPlayer, Serializable {
     public Player(String playerName, ITracker trackerStub) {
         this.playerName = playerName;
         this.trackerStub = trackerStub;
-
     }
 
     @Override

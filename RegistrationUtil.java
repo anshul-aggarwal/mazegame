@@ -26,7 +26,7 @@ public class RegistrationUtil {
         do {
             players = gameState.getPlayers();
             if (players.size() == 0) {
-                players = playerStub.getTrackerStub().addFirstPlayer(playerStub);
+                players = trackerStub.addFirstPlayer(playerStub);
             } else {
 
                 // Try registering with primary Server first
@@ -45,7 +45,7 @@ public class RegistrationUtil {
                     try {
                         gameState = backup.registerPlayer(playerStub);
                     } catch (RemoteException e) {
-
+                        players = trackerStub.getPlayers();
                     }
                 }
 
@@ -58,6 +58,9 @@ public class RegistrationUtil {
          */
         if(gameState.getMazeDimensions()==null){
            gameState = new GameState(trackerStub.getMazeDimensions(), players);
+            /**
+             * Place yourself in the maze somewhere, and generate treasures
+             */
         }
         playerStub.setGameState(gameState);
     }

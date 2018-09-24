@@ -24,6 +24,8 @@ public interface IPlayer extends Remote {
      */
     GameState registerPlayer(IPlayer playerStub) throws RemoteException;
 
+
+
     /**
      *
      * @return
