@@ -1,7 +1,7 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.LinkedHashSet;
+
 
 public interface IPlayer extends Remote {
 
@@ -15,7 +15,7 @@ public interface IPlayer extends Remote {
      *
      * @param players
      */
-    void addPlayers(ArrayList<IPlayer> players) throws RemoteException;
+    void addPlayers(LinkedHashSet<IPlayer> players) throws RemoteException;
 
     /**
      *
@@ -25,9 +25,35 @@ public interface IPlayer extends Remote {
     
     /**
     *
+    * @param gameState
+    */
+   void setGameState(GameState gameState) throws RemoteException;
+
+   /**
+    *
+    * @param playerStub
+    * @return
     * @throws RemoteException
     */
-    void pingNextPlayer() throws RemoteException;
+   GameState registerPlayer(IPlayer playerStub) throws RemoteException;
+
+
+
+   /**
+    *
+    * @return
+    * @throws RemoteException
+    */
+   ITracker getTrackerStub() throws RemoteException;
+
+
+    
+    
+    /**
+    *
+    * @throws RemoteException
+    */
+    //void pingNextPlayer() throws RemoteException;
     
     /**
     *
@@ -39,13 +65,6 @@ public interface IPlayer extends Remote {
     *
     * @throws RemoteException
     */
-    void setPingTarget() throws RemoteException;
+    //void setPingTarget() throws RemoteException;
     
-
-    /**
-     *
-     * @return
-     * @throws RemoteException
-     */
-    ITracker getTracker() throws RemoteException;
 }
