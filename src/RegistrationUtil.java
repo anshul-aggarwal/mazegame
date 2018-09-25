@@ -26,7 +26,6 @@ public class RegistrationUtil {
          * Keep on trying unless registered
          */
         do{
-
             // Get player Map from Tracker
             playerMap = trackerStub.getPlayerMap();
 
@@ -62,7 +61,7 @@ public class RegistrationUtil {
                     }
                 }
             }
-        }while (!playerMap.containsKey(playerMap));
+        }while (!playerMap.containsKey(playerName));
 
         // Set game state inside current player
         if(gameState==null){
