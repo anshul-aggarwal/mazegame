@@ -1,33 +1,22 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 
 public interface IPlayer extends Remote {
 
     /**
-     *
-     * @return
-     */
-    String getPlayerName() throws RemoteException;
-
-    /**
-     *
-     * @param players
-     */
-    void addPlayers(LinkedHashSet<IPlayer> players) throws RemoteException;
-
-    /**
-     *
-     * @throws RemoteException
-     */
-    void printPlayerNames() throws RemoteException;
-    
-    /**
     *
     * @param gameState
     */
    void setGameState(GameState gameState) throws RemoteException;
+
+    /**
+     *
+     * @param playerMap
+     */
+   void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap);
 
    /**
     *
@@ -35,9 +24,7 @@ public interface IPlayer extends Remote {
     * @return
     * @throws RemoteException
     */
-   GameState registerPlayer(IPlayer playerStub) throws RemoteException;
-
-
+   GameState registerPlayer(String name, IPlayer playerStub) throws RemoteException;
 
    /**
     *
@@ -46,9 +33,6 @@ public interface IPlayer extends Remote {
     */
    ITracker getTrackerStub() throws RemoteException;
 
-
-    
-    
     /**
     *
     * @throws RemoteException

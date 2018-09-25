@@ -1,17 +1,17 @@
-import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 
 public class Tracker implements ITracker {
 
     private final MazeDimensions mazeDimensions;
-    private LinkedHashSet<IPlayer> players;
+    private LinkedHashMap<String, IPlayer> playerMap;
 
     public static final int RMI_REGISTRY_PORT = 1099;
     public static final String TRACKER_STUB_REGISTRY_KEY = "Tracker";
@@ -24,12 +24,12 @@ public class Tracker implements ITracker {
      */
     public Tracker(int N, int K) {
         this.mazeDimensions = new MazeDimensions(N, K);
-        this.players = new LinkedHashSet<>(); // Using linkedHashSet to maintain insertion order
+        this.playerMap = new LinkedHashMap<>(); // Using linkedHashMap to maintain insertion order
     }
 
     @Override
-    public LinkedHashSet<IPlayer> getPlayers() throws RemoteException {
-        return this.players;
+    public LinkedHashMap<String, IPlayer> getPlayerMap() throws RemoteException {
+        return this.playerMap;
     }
 
     @Override
@@ -38,23 +38,23 @@ public class Tracker implements ITracker {
     }
 
     @Override
-    public synchronized LinkedHashSet<IPlayer> addFirstPlayer(IPlayer player) throws RemoteException {
-        if (this.players.size() == 0) {
-            this.players.add(player);
+    public synchronized LinkedHashMap<String, IPlayer> addFirstPlayer(String name, IPlayer player) throws RemoteException {
+        if (this.playerMap.size() == 0) {
+            this.playerMap.put(name, player);
         }
-        return this.players;
+        return this.playerMap;
     }
 
     @Override
-    public LinkedHashSet<IPlayer> addPlayer(IPlayer player) throws RemoteException {
-        this.players.add(player);
-        return this.players;
+    public LinkedHashMap<String, IPlayer> addPlayer(String name, IPlayer player) throws RemoteException {
+        this.playerMap.put(name, player);
+        return this.playerMap;
     }
 
     @Override
-    public LinkedHashSet<IPlayer> removePlayer(IPlayer player) throws RemoteException {
-        this.players.remove(player);
-        return this.players;
+    public LinkedHashMap<String, IPlayer> removePlayer(String name) throws RemoteException {
+        this.playerMap.remove(name);
+        return this.playerMap;
     }
 
     public static void main(String args[]) {
@@ -67,7 +67,7 @@ public class Tracker implements ITracker {
             port = Integer.parseInt(args[0]);
             N = Integer.parseInt(args[1]);
             K = Integer.parseInt(args[2]);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("Wrong arguments. It should be: java Tracker [port-number] [N] [K]");
             return;
         }
@@ -77,13 +77,13 @@ public class Tracker implements ITracker {
          * Get its reference in registry variable
          */
         Registry registry = null;
-        try{
+        try {
             registry = LocateRegistry.createRegistry(RMI_REGISTRY_PORT);
             System.out.println("Started RMI Registry at port:" + RMI_REGISTRY_PORT);
         } catch (RemoteException e) {
             try {
                 registry = LocateRegistry.getRegistry(RMI_REGISTRY_PORT);
-                System.out.println("RMI Registry already running at port:"+RMI_REGISTRY_PORT);
+                System.out.println("RMI Registry already running at port:" + RMI_REGISTRY_PORT);
             } catch (RemoteException e1) {
                 System.err.println("Some unknown error occurred while locating registry. Exiting Program");
                 System.err.println(e1);
@@ -96,17 +96,17 @@ public class Tracker implements ITracker {
          */
         ITracker stub;
         try {
-            ITracker tracker = new Tracker(N,K);
-            stub = (ITracker) UnicastRemoteObject.exportObject(tracker,port);
+            ITracker tracker = new Tracker(N, K);
+            stub = (ITracker) UnicastRemoteObject.exportObject(tracker, port);
         } catch (RemoteException e) {
-            System.err.println("Error creating Tracker Stub: "+e);
+            System.err.println("Error creating Tracker Stub: " + e);
             return;
         }
 
         /**
          * Bind the stub with registry
          */
-        try{
+        try {
             registry.unbind(TRACKER_STUB_REGISTRY_KEY);
         } catch (NotBoundException | RemoteException e) {
         }

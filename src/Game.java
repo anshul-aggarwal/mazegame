@@ -51,7 +51,7 @@ public class Game {
 		 * Register the player
 		 */
 		try {
-			RegistrationUtil.register(playerStub);
+			RegistrationUtil.register(playerName, playerStub);
 		} catch (RemoteException e) {
 			System.err.println("Unable to register new player. Exiting");
 			return;
