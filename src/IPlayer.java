@@ -16,7 +16,7 @@ public interface IPlayer extends Remote {
      *
      * @param playerMap
      */
-   void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap);
+   void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) throws RemoteException;
 
    /**
     *
