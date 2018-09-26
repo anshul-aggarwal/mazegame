@@ -31,7 +31,7 @@ public interface IPlayer extends Remote {
     * @return
     * @throws RemoteException
     */
-   ITracker getTrackerStub() throws RemoteException;
+    ITracker getTrackerStub() throws RemoteException;
 
     /**
     *
@@ -44,11 +44,35 @@ public interface IPlayer extends Remote {
     * @throws RemoteException
     */
     boolean respondToPing() throws RemoteException;
+
+    /**
+    *
+    * @throws RemoteException
+    */
+	void setPingTarget() throws RemoteException;
     
     /**
     *
     * @throws RemoteException
     */
-    //void setPingTarget() throws RemoteException;
+    void move(String direction) throws RemoteException;
+
+    /**
+    *
+    * @throws RemoteException
+    */
+	void refreshGameState() throws RemoteException;
+	
+	/**
+    *
+    * @throws RemoteException
+    */
+	void exitGame() throws RemoteException;
+	
+	/**
+    *
+    * @throws RemoteException
+    */
+	IPlayer getPingPlayer() throws RemoteException;
     
 }

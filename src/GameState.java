@@ -70,4 +70,5 @@ public class GameState implements Serializable {
     public MazeDimensions getMazeDimensions() {
         return mazeDimensions;
     }
+    
 }

@@ -72,7 +72,7 @@ public class RegistrationUtil {
              */
         }
         playerStub.setGameState(gameState);
-        System.out.println("Registered");
+        //System.out.println("Registered");
 
 		//PingUtil.pingNextPlayer(PingUtil.setPingTarget(gameState.getPlayerMap(), playerStub.getPlayerName()));
 

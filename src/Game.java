@@ -39,8 +39,11 @@ public class Game {
 		 * Create player object & stub
 		 */
 		IPlayer playerStub;
+		IPlayer player = new Player(playerName, trackerStub);
+		IPlayer pingPlayer = null;
+
 		try {
-			IPlayer player = new Player(playerName, trackerStub);
+			//IPlayer player = new Player(playerName, trackerStub);
 			playerStub = (IPlayer) UnicastRemoteObject.exportObject(player, port);
 		} catch (RemoteException e) {
 			System.err.println("Unable to create player stub. Exiting." + e);
@@ -56,30 +59,63 @@ public class Game {
 			System.err.println("Unable to register new player. Exiting");
 			return;
 		}
+		
+		/**
+		 * Set the ping target. This ping target needs to be reset every time the player who you are pinging crashes
+		 * or when a new player is added in case you are the primary server.
+		 * 
+		 * The ping target initially is the player who joined before you.
+		 * The player who joins last will be pinged by the player who is first in the list, i.e. the primary server.
+		 */
+		try {
+			player.setPingTarget();
+		} catch (RemoteException e1) {
+			System.out.println("Failure setting initial ping target");
+			e1.printStackTrace();
+		}
 
 		/**
-		 * Pinging util
+		 * Pinging thread
 		 *
-		 */
-		
-		
+		 */		
+		Thread ping = new PingUtil(player);
+		ping.start();
 
-		/*
-            Start Game
+		/**
+         * Start Game
 		 */
 		try {
 			Scanner sc = new Scanner(System.in);
 			while (true) {
-				System.out.print("Enter c to contact everyone or anything else to quit: ");
+				//Movement of player
+				//System.out.print("Enter c to contact everyone or anything else to quit: ");
 				String input = sc.next();
-				if (input.equals("c")) {
-					System.out.println("SOME DUMMY CODE");
-				} else {
+				boolean terminateGame = false;
+				switch(input)
+				{
+				case "0": player.refreshGameState(); break;
+				case "1":
+				case "2":
+				case "3":
+				case "4": player.move(input); break;
+				case "9": player.exitGame(); break;
+				default: System.out.println("Invalid"); terminateGame = true; break;
+				}
+//				if (input.equals("1")) {
+//					System.out.println("SOME DUMMY CODE");
+//				} else {
+//					break;
+//				}
+				
+				if (terminateGame)
+				{
+					ping.interrupt();
 					break;
 				}
 			}
 			sc.close();
 			System.out.println("Game Over!");
+			System.exit(0);
 		} catch (Exception e) {
 			System.err.println("Game exception: " + e.toString());
 			e.printStackTrace();
