@@ -1,78 +1,135 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-
+import java.util.UUID;
 
 public interface IPlayer extends Remote {
 
-    /**
-    *
-    * @param gameState
-    */
-   void setGameState(GameState gameState) throws RemoteException;
+	// --- PLAYER METHODS BEGIN ----
 
-    /**
-     *
-     * @param playerMap
-     */
-   void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) throws RemoteException;
-
-   /**
-    *
-    * @param playerStub
-    * @return
-    * @throws RemoteException
-    */
-   GameState registerPlayer(String name, IPlayer playerStub) throws RemoteException;
-
-   /**
-    *
-    * @return
-    * @throws RemoteException
-    */
-    ITracker getTrackerStub() throws RemoteException;
-
-    /**
-    *
-    * @throws RemoteException
-    */
-    //void pingNextPlayer() throws RemoteException;
-    
-    /**
-    *
-    * @throws RemoteException
-    */
-    boolean respondToPing() throws RemoteException;
-
-    /**
-    *
-    * @throws RemoteException
-    */
-	void setPingTarget() throws RemoteException;
-    
-    /**
-    *
-    * @throws RemoteException
-    */
-    void move(String direction) throws RemoteException;
-
-    /**
-    *
-    * @throws RemoteException
-    */
-	void refreshGameState() throws RemoteException;
-	
 	/**
-    *
-    * @throws RemoteException
-    */
-	void exitGame() throws RemoteException;
-	
+	 *
+	 * @return
+	 * @throws RemoteException
+	 */
+	ITracker getTrackerStub() throws RemoteException;
+
 	/**
-    *
-    * @throws RemoteException
-    */
+	 * This method will be called,
+	 * 
+	 * i) When this player is being promoted to a server and the server wants to set
+	 * the latest game state ii) After any action, setting the gamestate returned by
+	 * the server
+	 * 
+	 * TODO: Calling this function can in turn affect the
+	 * 
+	 * a) UI. So, Redraw the UI as soon as this function is complete. b)
+	 * Communication State. Update Ping player and PServer and BServer.
+	 *
+	 * @param gameState
+	 */
+	void setGameState(GameState gameState) throws RemoteException;
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	GameState getGameState() throws RemoteException;
+
+	/**
+	 * This method will be called,
+	 * 
+	 * i) When updating playerMap (no affect on maze related state) ii) when server
+	 * updates the ping topology. (Update Ping player and PServer and BServer.)
+	 * 
+	 *
+	 * @param playerMap
+	 */
+	void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) throws RemoteException;
+
+	/**
+	 *
+	 * @throws RemoteException
+	 */
+	boolean respondToPing() throws RemoteException;
+
+	/**
+	 *
+	 * @throws RemoteException
+	 */
 	IPlayer getPingPlayer() throws RemoteException;
-    
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	IPlayer getPrimaryServer() throws RemoteException;
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	IPlayer getBackupServer() throws RemoteException;
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	boolean isPrimary() throws RemoteException;
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	boolean isBackup() throws RemoteException;
+
+	// --- PLAYER METHODS END ----
+
+	// --- SERVER METHODS BEGIN ---
+
+	/**
+	 * 
+	 * @param requestId
+	 * @param name
+	 * @param playerStub
+	 * @return
+	 * @throws RemoteException
+	 */
+	GameState registerPlayer(UUID requestId, String name, IPlayer playerStub) throws RemoteException;
+
+	/**
+	 * 
+	 * @param requestId
+	 * @param name
+	 * @return
+	 * @throws RemoteException
+	 */
+	GameState deregisterPlayer(UUID requestId, String name) throws RemoteException;
+
+	/**
+	 * 
+	 * @param requestId
+	 * @param name
+	 * @param direction
+	 * @return
+	 * @throws RemoteException
+	 */
+	GameState movePlayer(UUID requestId, String name, String direction) throws RemoteException;
+
+	/**
+	 * 
+	 * @param requestId
+	 * @param updatedGameState
+	 * @return
+	 * @throws RemoteException
+	 */
+	boolean markCompletedRequest(UUID requestId, GameState updatedGameState) throws RemoteException;
+
+	// --- SERVER METHODS END ---
+
 }

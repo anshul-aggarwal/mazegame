@@ -2,19 +2,21 @@ import java.io.Serializable;
 
 public class MazeDimensions implements Serializable {
 
-    private final int N;
-    private final int K;
+	private static final long serialVersionUID = -3400700290170258302L;
 
-    public MazeDimensions(int n, int k) {
-        N = n;
-        K = k;
-    }
+	private final int N;
+	private final int K;
 
-    public int getN() {
-        return N;
-    }
+	public MazeDimensions(int n, int k) {
+		N = n;
+		K = k;
+	}
 
-    public int getK() {
-        return K;
-    }
+	public int getN() {
+		return N;
+	}
+
+	public int getK() {
+		return K;
+	}
 }

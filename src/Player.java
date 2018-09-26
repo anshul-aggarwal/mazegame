@@ -2,137 +2,194 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class Player implements IPlayer, Serializable {
 
-    private final String playerName;
-    private final ITracker trackerStub;
-    private IPlayer pingPlayer;
+	private static final long serialVersionUID = 8439847363383306568L;
 
-    private GameState gameState;
-    
-    public Player(String playerName, ITracker trackerStub) {
-        this.playerName = playerName;
-        this.trackerStub = trackerStub;
-    }
+	/*
+	 * Non game/communication related states
+	 */
+	private final String playerName;
+	private final ITracker trackerStub;
 
-    @Override
-    public void setGameState(GameState gameState) throws RemoteException {
-        this.gameState = gameState;
-    }
+	/*
+	 * Communication States
+	 */
+	private Map.Entry<String, IPlayer> pingPlayer;
+	private Map.Entry<String, IPlayer> primary;
+	private Map.Entry<String, IPlayer> backup;
 
-    @Override
-    public void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) {
-        this.gameState.setPlayerMap(playerMap);
-    }
-    
-    @Override
-    public GameState registerPlayer(String name, IPlayer playerStub) throws RemoteException {
-        if (this.isPrimary() || this.isBackup()) {
-            this.setPlayerMap(trackerStub.addPlayer(name, playerStub));
-            System.out.println("Successfully registered player: " + name);
-            /*
-                TODO: Logic to randomly assign a block in maze
-             */
-        }
-        if (this.isPrimary())
-        {
-        	setPingTarget();
-        }
-        return this.gameState;
-    }
-    
-    @Override
-    public ITracker getTrackerStub() {
-        return trackerStub;
-    }
+	/*
+	 * Game State
+	 */
+	private GameState gameState;
 
-    @Override
-    public boolean respondToPing() throws RemoteException {
-    	System.out.println("I was pinged.");
-        return true;
-    }
-    
-    @Override
-    public void setPingTarget() throws RemoteException {
-    	String pingPlayer = null;
-    	LinkedHashMap<String,IPlayer> playerMap = gameState.getPlayerMap();
-    	
-    	int playerCount = playerMap.size();
-    	if (playerCount > 1) {
-    		
-            Iterator<String> iter = playerMap.keySet().iterator();
-            
-            pingPlayer = iter.next();
-            
-            if (pingPlayer.equals(playerName)) {
-            	while(iter.hasNext())
-            	{
-            		pingPlayer = iter.next();
-            	}
-            }
-            else {
-	            String currentString = pingPlayer;
-	            while(iter.hasNext()) {
-	            	String nextString = iter.next();
-	            	if (nextString.equals(playerName))
-	            	{
-	            		pingPlayer = currentString;
-	            	}
-	            	else {
-	            		currentString = nextString;
-	            	}
-	            }
-            }
-            
-            System.out.println("Ping target is " + pingPlayer);
-            
-    	}
-    	else
-    	{
-    		pingPlayer = playerName;
-    	}
-    	this.pingPlayer = playerMap.get(pingPlayer);
-    	//return this.pingPlayer;
-    }
-    
-    @Override
-    public void move(String direction) throws RemoteException {
-    	//Contains dummy code for movement. TODO add movement code
-    	switch(direction) {
-    	case "1": System.out.println("Moved West"); break;
-    	case "2": System.out.println("Moved South"); break;
-    	case "3": System.out.println("Moved East"); break;
-    	case "4": System.out.println("Moved North"); break;
-    	}
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param playerName
+	 * @param trackerStub
+	 */
+	public Player(String playerName, ITracker trackerStub) {
+		this.playerName = playerName;
+		this.trackerStub = trackerStub;
+		this.gameState = new GameState(null, new LinkedHashMap<>());
+	}
 
-    private boolean isPrimary() {
-        String primary = this.gameState.getPrimaryName();
-        return this.playerName.equals(primary);
-    }
-
-    private boolean isBackup() {
-        String backup = this.gameState.getBackupName();
-        return this.playerName.equals(backup);
-    }
+	// --- PLAYER METHODS BEGIN ----
 
 	@Override
-	public void refreshGameState() throws RemoteException {
-		// TODO Auto-generated method stub
-		
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+		this.updateCommunicationState();
 	}
 
 	@Override
-	public void exitGame() throws RemoteException {
-		// TODO Auto-generated method stub
-		
+	public GameState getGameState() throws RemoteException {
+		return this.gameState;
 	}
 
 	@Override
-	public IPlayer getPingPlayer() throws RemoteException {
-		return this.pingPlayer;
+	public void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) {
+		this.gameState.setPlayerMap(playerMap);
+		this.updateCommunicationState();
 	}
+
+	@Override
+	public ITracker getTrackerStub() {
+		return trackerStub;
+	}
+
+	@Override
+	public boolean respondToPing() {
+		System.out.println("I was pinged.");
+		return true;
+	}
+
+	@Override
+	public IPlayer getPingPlayer() {
+		return this.pingPlayer != null ? this.pingPlayer.getValue() : null;
+	}
+
+	@Override
+	public IPlayer getPrimaryServer() {
+		return this.primary != null ? this.primary.getValue() : null;
+	}
+
+	@Override
+	public IPlayer getBackupServer() {
+		return this.backup != null ? this.backup.getValue() : null;
+	}
+
+	@Override
+	public boolean isPrimary() {
+		return (this.primary != null) && (this.primary.getKey().equals(this.playerName));
+	}
+
+	@Override
+	public boolean isBackup() {
+		return (this.backup != null) && (this.backup.getKey().equals(this.playerName));
+	}
+
+	// --- PLAYER METHODS END ----
+
+	// --- Communication State Update Private Methods Begin ---
+
+	private void updateCommunicationState() {
+		this.setPrimaryAndBackupServerState();
+		this.setPingTarget();
+	}
+
+	private void setPrimaryAndBackupServerState() {
+		LinkedHashMap<String, IPlayer> playerMap = this.gameState.getPlayerMap();
+		Iterator<Map.Entry<String, IPlayer>> iter = playerMap.entrySet().iterator();
+		this.primary = null;
+		this.backup = null;
+
+		if (iter.hasNext()) {
+			this.primary = iter.next();
+		}
+		if (iter.hasNext()) {
+			this.backup = iter.next();
+		}
+	}
+
+	/*
+	 * 
+	 * Set the ping target. This ping target needs to be reset every time the player
+	 * who you are pinging crashes or when a new player is added in case you are the
+	 * primary server.
+	 * 
+	 * The ping target initially is the player who joined before you. The player who
+	 * joins last will be pinged by the player who is first in the list, i.e. the
+	 * primary server.
+	 */
+	private void setPingTarget() {
+		Map.Entry<String, IPlayer> pingPlayer = null;
+		LinkedHashMap<String, IPlayer> playerMap = gameState.getPlayerMap();
+
+		if (playerMap.size() > 1) {
+
+			Iterator<Map.Entry<String, IPlayer>> iter = playerMap.entrySet().iterator();
+			pingPlayer = iter.next();
+
+			if (pingPlayer.getKey().equals(playerName)) {
+				while (iter.hasNext()) {
+					pingPlayer = iter.next();
+				}
+			} else {
+				Map.Entry<String, IPlayer> currentPlayer = pingPlayer;
+				while (iter.hasNext()) {
+					Map.Entry<String, IPlayer> nextPlayer = iter.next();
+					if (nextPlayer.getKey().equals(playerName)) {
+						pingPlayer = currentPlayer;
+						break;
+					} else {
+						currentPlayer = nextPlayer;
+					}
+				}
+			}
+
+			System.out.println("Ping target is " + pingPlayer.getKey());
+		}
+
+		this.pingPlayer = pingPlayer;
+	}
+
+	// --- Communication State Update Private Methods End ---
+
+	// --- SERVER METHODS BEGIN ---
+
+	@Override
+	public GameState registerPlayer(UUID requestID, String name, IPlayer playerStub) throws RemoteException {
+		ServerRequestHandlerUtil.registerPlayer(requestID, this, name, playerStub);
+		return this.gameState;
+	}
+
+	@Override
+	public GameState deregisterPlayer(UUID requestId, String name) throws RemoteException {
+		ServerRequestHandlerUtil.deregisterPlayer(requestId, this, name);
+		return this.gameState;
+	}
+
+	@Override
+	public GameState movePlayer(UUID requestId, String name, String direction) throws RemoteException {
+		ServerRequestHandlerUtil.movePlayer(requestId, this, name, direction);
+		return this.gameState;
+	}
+
+	@Override
+	public boolean markCompletedRequest(UUID requestId, GameState updatedGameState) throws RemoteException {
+		boolean markedCompletedRequest = ServerRequestHandlerUtil.markCompletedRequest(requestId);
+		if (markedCompletedRequest) {
+			this.setGameState(gameState);
+		}
+		return markedCompletedRequest;
+	}
+
+	// --- SERVER METHODS END ---
 
 }
