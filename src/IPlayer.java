@@ -15,6 +15,13 @@ public interface IPlayer extends Remote {
 	ITracker getTrackerStub() throws RemoteException;
 
 	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	String getPlayerName() throws RemoteException;
+
+	/**
 	 * This method will be called,
 	 * 
 	 * i) When this player is being promoted to a server and the server wants to set
@@ -53,6 +60,12 @@ public interface IPlayer extends Remote {
 	 * @throws RemoteException
 	 */
 	boolean respondToPing() throws RemoteException;
+
+	/**
+	 *
+	 * @throws RemoteException
+	 */
+	String getPingPlayerName() throws RemoteException;
 
 	/**
 	 *

@@ -42,13 +42,23 @@ public class Player implements IPlayer, Serializable {
 	// --- PLAYER METHODS BEGIN ----
 
 	@Override
+	public ITracker getTrackerStub() {
+		return trackerStub;
+	}
+
+	@Override
+	public String getPlayerName() {
+		return this.playerName;
+	}
+
+	@Override
 	public void setGameState(GameState gameState) {
 		this.gameState = gameState;
 		this.updateCommunicationState();
 	}
 
 	@Override
-	public GameState getGameState() throws RemoteException {
+	public GameState getGameState() {
 		return this.gameState;
 	}
 
@@ -59,14 +69,14 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
-	public ITracker getTrackerStub() {
-		return trackerStub;
-	}
-
-	@Override
 	public boolean respondToPing() {
 		System.out.println("I was pinged.");
 		return true;
+	}
+
+	@Override
+	public String getPingPlayerName() {
+		return this.pingPlayer != null ? this.pingPlayer.getKey() : null;
 	}
 
 	@Override

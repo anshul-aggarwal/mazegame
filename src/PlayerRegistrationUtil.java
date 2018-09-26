@@ -20,13 +20,13 @@ public class PlayerRegistrationUtil {
 	 * This method will also update the communication/Game state maintained inside
 	 * the player object!
 	 *
-	 * @param playerName
-	 * @param playerStub
+	 * @param localPlayerStub
 	 * @throws InterruptedException
 	 */
-	public static void register(String playerName, IPlayer playerStub) throws RemoteException, InterruptedException {
+	public static void register(IPlayer localPlayerStub) throws RemoteException, InterruptedException {
 
-		ITracker trackerStub = playerStub.getTrackerStub();
+		String playerName = localPlayerStub.getPlayerName();
+		ITracker trackerStub = localPlayerStub.getTrackerStub();
 		GameState gameState = null;
 		LinkedHashMap<String, IPlayer> playerMap = null;
 		Iterator<Map.Entry<String, IPlayer>> playerMapIterator = null;
@@ -40,7 +40,7 @@ public class PlayerRegistrationUtil {
 			playerMap = trackerStub.getPlayerMap();
 
 			if (playerMap.size() == 0) {
-				playerMap = trackerStub.addFirstPlayer(playerName, playerStub);
+				playerMap = trackerStub.addFirstPlayer(playerName, localPlayerStub);
 			} else {
 
 				// Try registering with primary player
@@ -50,7 +50,7 @@ public class PlayerRegistrationUtil {
 				IPlayer primaryStub = primaryServer.getValue();
 
 				try {
-					gameState = primaryStub.registerPlayer(requestId, playerName, playerStub);
+					gameState = primaryStub.registerPlayer(requestId, playerName, localPlayerStub);
 					playerMap = gameState.getPlayerMap();
 				} catch (RemoteException e) {
 
@@ -65,7 +65,7 @@ public class PlayerRegistrationUtil {
 						IPlayer backupStub = backupServer.getValue();
 
 						try {
-							gameState = backupStub.registerPlayer(requestId, playerName, playerStub);
+							gameState = backupStub.registerPlayer(requestId, playerName, localPlayerStub);
 							playerMap = gameState.getPlayerMap();
 						} catch (RemoteException e1) {
 							trackerStub.removePlayer(backupName);
@@ -84,16 +84,30 @@ public class PlayerRegistrationUtil {
 			 * Place yourself in the maze somewhere, and generate treasures
 			 */
 		}
-		playerStub.setGameState(gameState);
+		localPlayerStub.setGameState(gameState);
 	}
 
 	/**
 	 * 
 	 * @param playerName
-	 * @param playerStub
+	 * @param localPlayerStub
 	 */
-	public static void deregister(String playerName, IPlayer playerStub) {
-
+	public static boolean deregister(String playerName, IPlayer localPlayerStub) {
+		UUID requestId = UUID.randomUUID();
+		try {
+			IPlayer primary = localPlayerStub.getPrimaryServer();
+			GameState gameState = primary.deregisterPlayer(requestId, playerName);
+			localPlayerStub.setGameState(gameState);
+		} catch (RemoteException e) {
+			try {
+				IPlayer backup = localPlayerStub.getBackupServer();
+				GameState gameState = backup.deregisterPlayer(requestId, playerName);
+				localPlayerStub.setGameState(gameState);
+			} catch (RemoteException e1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

@@ -54,7 +54,7 @@ public class Game {
 		 * Register the player
 		 */
 		try {
-			PlayerRegistrationUtil.register(playerName, playerStub);
+			PlayerRegistrationUtil.register(playerStub);
 		} catch (RemoteException | InterruptedException e) {
 			System.err.println("Unable to register new player. Exiting");
 			return;
@@ -73,33 +73,30 @@ public class Game {
 		System.out.println("Started Game");
 		try {
 			Scanner sc = new Scanner(System.in);
-			while (true) {
+			boolean terminateGame = false;
+
+			while (!terminateGame) {
 				String input = sc.next();
-				boolean terminateGame = false;
 				switch (input) {
 				case "0":
-					PlayerActionUtil.refresh(playerName, playerStub);
+					PlayerActionUtil.refresh(playerStub);
 					break;
 				case "1":
 				case "2":
 				case "3":
 				case "4":
-					PlayerActionUtil.move(playerName, playerStub, input);
+					PlayerActionUtil.move(playerStub, input);
 					break;
 				case "9":
-					PlayerRegistrationUtil.deregister(playerName, playerStub);
+					terminateGame = PlayerRegistrationUtil.deregister(playerName, playerStub);
 					break;
 				default:
-					System.out.println("Invalid");
-					terminateGame = true;
-					break;
-				}
-
-				if (terminateGame) {
-					ping.interrupt();
+					System.out.println("Invalid input. Press 9 to terminate");
 					break;
 				}
 			}
+
+			ping.interrupt();
 			sc.close();
 			System.out.println("Game Over!");
 			System.exit(0);

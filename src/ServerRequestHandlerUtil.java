@@ -49,9 +49,21 @@ public class ServerRequestHandlerUtil {
 	 * @param server
 	 * @param playerName
 	 * @param requestId
+	 * @throws RemoteException
 	 */
-	public static void deregisterPlayer(UUID requestId, IPlayer server, String playerName) {
+	public static void deregisterPlayer(UUID requestId, IPlayer server, String playerName) throws RemoteException {
 
+		// Removing player from tracker and server
+		ITracker trackerStub = server.getTrackerStub();
+		server.setPlayerMap(trackerStub.removePlayer(playerName));
+
+		// Maintaining a copy with backup server
+		IPlayer backupServerStub = server.getBackupServer();
+		if (backupServerStub != null) {
+			backupServerStub.markCompletedRequest(requestId, server.getGameState());
+		}
+
+		System.out.println("Successfully Removed Player: " + playerName);
 	}
 
 	/**

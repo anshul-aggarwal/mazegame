@@ -7,11 +7,10 @@ public class PlayerActionUtil {
 
 	/**
 	 * 
-	 * @param playerName
-	 * @param player
+	 * @param localPlayerStub
 	 * @param direction
 	 */
-	public static void move(String playerName, IPlayer player, String direction) {
+	public static void move(IPlayer localPlayerStub, String direction) {
 
 		// Contains dummy code for movement. TODO add movement code
 		switch (direction) {
@@ -33,10 +32,9 @@ public class PlayerActionUtil {
 
 	/**
 	 * 
-	 * @param playerName
-	 * @param player
+	 * @param localPlayerStub
 	 */
-	public static void refresh(String playerName, IPlayer player) {
+	public static void refresh(IPlayer localPlayerStub) {
 
 	}
 }
