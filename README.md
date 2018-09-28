@@ -1,4 +1,4 @@
-# mazegame
+# mazegame GUI
 Maze Game - Distributed Systems Assignment 1
 
 This is a new project, and the code we are currently writing needs to be merged into this project.
