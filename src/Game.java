@@ -4,6 +4,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.util.Map;
 
 public class Game {
 
@@ -40,7 +41,7 @@ public class Game {
 		 * Create player object & stub
 		 */
 		IPlayer playerStub;
-		IPlayer player = new Player(playerName, trackerStub);
+		Player player = new Player(playerName, trackerStub);
 
 		try {
 			// IPlayer player = new Player(playerName, trackerStub);
@@ -76,16 +77,17 @@ public class Game {
 			boolean terminateGame = false;
 
 			while (!terminateGame) {
+				printGameState(player.getGameState());
 				String input = sc.next();
 				switch (input) {
 				case "0":
-					PlayerActionUtil.refresh(playerStub);
+					PlayerActionUtil.refresh(player);
 					break;
 				case "1":
 				case "2":
 				case "3":
 				case "4":
-					PlayerActionUtil.move(playerStub, input);
+					PlayerActionUtil.move(player, input);
 					break;
 				case "9":
 					terminateGame = PlayerRegistrationUtil.deregister(playerName, playerStub);
@@ -103,6 +105,24 @@ public class Game {
 		} catch (Exception e) {
 			System.err.println("Game exception: " + e.toString());
 			e.printStackTrace();
+		}
+	}
+
+	private static void printGameState(GameState gameState) {
+		int N = gameState.getMazeDimensions().getN();
+		String[][] maze = gameState.getMaze();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (maze[i][j] == null)
+					System.out.print("   .");
+				else
+					System.out.printf("%4S", maze[i][j]);
+			}
+			System.out.println();
+		}
+		Map<String,Integer> playerScore = gameState.getPlayerScore();
+		for (String name : playerScore.keySet()){
+			System.out.println(name + " = " + playerScore.get(name));
 		}
 	}
 }

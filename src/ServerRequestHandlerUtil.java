@@ -22,17 +22,14 @@ public class ServerRequestHandlerUtil {
 	 * @param requestId
 	 * @throws RemoteException
 	 */
-	public static void registerPlayer(UUID requestId, IPlayer server, String playerName, IPlayer playerStub)
+	public static void registerPlayer(UUID requestId, Player server, String playerName, IPlayer playerStub)
 			throws RemoteException {
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
 			// Registering with tracker and Primary Server
 			ITracker trackerStub = server.getTrackerStub();
 			server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
-
-			/*
-			 * TODO: Logic to randomly assign a block in maze
-			 */
+			server.getGameState().addPlayer(playerName);
 
 			// Maintaining a copy with backup server
 			IPlayer backupServerStub = server.getBackupServer();
@@ -51,11 +48,12 @@ public class ServerRequestHandlerUtil {
 	 * @param requestId
 	 * @throws RemoteException
 	 */
-	public static void deregisterPlayer(UUID requestId, IPlayer server, String playerName) throws RemoteException {
+	public static void deregisterPlayer(UUID requestId, Player server, String playerName) throws RemoteException {
 
 		// Removing player from tracker and server
 		ITracker trackerStub = server.getTrackerStub();
 		server.setPlayerMap(trackerStub.removePlayer(playerName));
+		server.getGameState().removePlayer(playerName);
 
 		// Maintaining a copy with backup server
 		IPlayer backupServerStub = server.getBackupServer();
@@ -73,8 +71,25 @@ public class ServerRequestHandlerUtil {
 	 * @param playerName
 	 * @param direction
 	 */
-	public static void movePlayer(UUID requestId, IPlayer server, String playerName, String direction) {
-
+	public static void movePlayer(UUID requestId, Player server, String playerName, String direction) {
+		switch (direction) {
+			case "1":
+				server.getGameState().movePlayer(playerName, 0, -1);
+				System.out.println("Moved West");
+				break;
+			case "2":
+				server.getGameState().movePlayer(playerName, 1, 0);
+				System.out.println("Moved South");
+				break;
+			case "3":
+				server.getGameState().movePlayer(playerName, 0, 1);
+				System.out.println("Moved East");
+				break;
+			case "4":
+				server.getGameState().movePlayer(playerName, -1, 0);
+				System.out.println("Moved North");
+				break;
+		}
 	}
 
 	/**

@@ -79,10 +79,11 @@ public class PlayerRegistrationUtil {
 		// Set game state inside current player
 		if (gameState == null) {
 			// Happens only when you are the primary Server/First player to be registered
-			gameState = new GameState(trackerStub.getMazeDimensions(), playerMap);
-			/**
-			 * Place yourself in the maze somewhere, and generate treasures
-			 */
+			gameState = new GameState(trackerStub.getMazeDimensions());
+			playerMap = new LinkedHashMap<>();
+			playerMap.put(playerName, localPlayerStub);
+			gameState.setPlayerMap(playerMap);
+			gameState.addPlayer(playerName);
 		}
 		localPlayerStub.setGameState(gameState);
 	}

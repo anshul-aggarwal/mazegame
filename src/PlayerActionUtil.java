@@ -1,3 +1,6 @@
+import java.util.UUID;
+import java.rmi.RemoteException;
+
 /**
  * This utility is meant for handling all Player actions (except
  * register,de-register)
@@ -7,34 +10,35 @@ public class PlayerActionUtil {
 
 	/**
 	 * 
-	 * @param localPlayerStub
+	 * @param player
 	 * @param direction
 	 */
-	public static void move(IPlayer localPlayerStub, String direction) {
-
-		// Contains dummy code for movement. TODO add movement code
-		switch (direction) {
-		case "1":
-			System.out.println("Moved West");
-			break;
-		case "2":
-			System.out.println("Moved South");
-			break;
-		case "3":
-			System.out.println("Moved East");
-			break;
-		case "4":
-			System.out.println("Moved North");
-			break;
+	public static void move(Player player, String direction) {
+		GameState gameState = null;
+		try {
+			UUID requestId = UUID.randomUUID();
+			gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
+		} catch (RemoteException e) {
+			
 		}
-
+		if (gameState != null) {
+			player.setGameState(gameState);
+		}
 	}
 
 	/**
 	 * 
-	 * @param localPlayerStub
+	 * @param player
 	 */
-	public static void refresh(IPlayer localPlayerStub) {
-
+	public static void refresh(Player player) {
+		GameState gameState = null;
+		try {
+			gameState = player.getPrimaryServer().getGameState();
+		} catch (RemoteException e) {
+			
+		}
+		if (gameState != null) {
+			player.setGameState(gameState);
+		}
 	}
 }
