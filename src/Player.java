@@ -69,7 +69,7 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public boolean respondToPing() {
-		System.out.println("I was pinged.");
+		// System.out.println("I was pinged.");
 		return true;
 	}
 

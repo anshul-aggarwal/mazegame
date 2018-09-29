@@ -26,13 +26,14 @@ public class ServerRequestHandlerUtil {
 			throws RemoteException {
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
-			// Registering with tracker and Primary Server
 			ITracker trackerStub = server.getTrackerStub();
+			IPlayer backupServerStub = server.getBackupServer();
+
+			// Registering with tracker and Primary Server
 			server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
 			server.getGameState().addPlayer(playerName);
 
 			// Maintaining a copy with backup server
-			IPlayer backupServerStub = server.getBackupServer();
 			if (backupServerStub != null) {
 				backupServerStub.markCompletedRequest(requestId, server.getGameState());
 			}
@@ -73,22 +74,22 @@ public class ServerRequestHandlerUtil {
 	 */
 	public static void movePlayer(UUID requestId, Player server, String playerName, String direction) {
 		switch (direction) {
-			case "1":
-				server.getGameState().movePlayer(playerName, 0, -1);
-				System.out.println("Moved West");
-				break;
-			case "2":
-				server.getGameState().movePlayer(playerName, 1, 0);
-				System.out.println("Moved South");
-				break;
-			case "3":
-				server.getGameState().movePlayer(playerName, 0, 1);
-				System.out.println("Moved East");
-				break;
-			case "4":
-				server.getGameState().movePlayer(playerName, -1, 0);
-				System.out.println("Moved North");
-				break;
+		case "1":
+			server.getGameState().movePlayer(playerName, 0, -1);
+			System.out.println("Moved West");
+			break;
+		case "2":
+			server.getGameState().movePlayer(playerName, 1, 0);
+			System.out.println("Moved South");
+			break;
+		case "3":
+			server.getGameState().movePlayer(playerName, 0, 1);
+			System.out.println("Moved East");
+			break;
+		case "4":
+			server.getGameState().movePlayer(playerName, -1, 0);
+			System.out.println("Moved North");
+			break;
 		}
 	}
 

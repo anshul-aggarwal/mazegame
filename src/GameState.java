@@ -1,11 +1,11 @@
 import java.io.Serializable;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameState implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -21,7 +21,6 @@ public class GameState implements Serializable {
 	 * Constructor
 	 *
 	 * @param mazeDimensions
-	 * @param playerMap
 	 */
 	public GameState(MazeDimensions mazeDimensions) {
 		this.mazeDimensions = mazeDimensions;
@@ -89,7 +88,7 @@ public class GameState implements Serializable {
 			int X = ThreadLocalRandom.current().nextInt(0, N);
 			if (this.maze[Y][X] == null) {
 				this.maze[Y][X] = playerName;
-				this.playerLocationMap.put(playerName, new Location(Y,X));
+				this.playerLocationMap.put(playerName, new Location(Y, X));
 				this.playerScore.put(playerName, 0);
 				break;
 			}

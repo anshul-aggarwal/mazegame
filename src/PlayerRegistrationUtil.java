@@ -38,6 +38,7 @@ public class PlayerRegistrationUtil {
 		do {
 			// Get player Map from Tracker
 			playerMap = trackerStub.getPlayerMap();
+			gameState = null;
 
 			if (playerMap.size() == 0) {
 				playerMap = trackerStub.addFirstPlayer(playerName, localPlayerStub);
@@ -57,7 +58,7 @@ public class PlayerRegistrationUtil {
 					// If primary Server is not responding
 					trackerStub.removePlayer(primaryName);
 
-					if (!playerMapIterator.hasNext()) {
+					if (playerMapIterator.hasNext()) {
 
 						// Try registering with backup Server
 						Map.Entry<String, IPlayer> backupServer = playerMapIterator.next();
@@ -80,8 +81,6 @@ public class PlayerRegistrationUtil {
 		if (gameState == null) {
 			// Happens only when you are the primary Server/First player to be registered
 			gameState = new GameState(trackerStub.getMazeDimensions());
-			playerMap = new LinkedHashMap<>();
-			playerMap.put(playerName, localPlayerStub);
 			gameState.setPlayerMap(playerMap);
 			gameState.addPlayer(playerName);
 		}

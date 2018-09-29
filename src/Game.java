@@ -3,8 +3,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Game {
 
@@ -41,10 +41,9 @@ public class Game {
 		 * Create player object & stub
 		 */
 		IPlayer playerStub;
-		Player player = new Player(playerName, trackerStub);
+		IPlayer player = new Player(playerName, trackerStub);
 
 		try {
-			// IPlayer player = new Player(playerName, trackerStub);
 			playerStub = (IPlayer) UnicastRemoteObject.exportObject(player, port);
 		} catch (RemoteException e) {
 			System.err.println("Unable to create player stub. Exiting." + e);
@@ -120,8 +119,8 @@ public class Game {
 			}
 			System.out.println();
 		}
-		Map<String,Integer> playerScore = gameState.getPlayerScore();
-		for (String name : playerScore.keySet()){
+		Map<String, Integer> playerScore = gameState.getPlayerScore();
+		for (String name : playerScore.keySet()) {
 			System.out.println(name + " = " + playerScore.get(name));
 		}
 	}
