@@ -82,7 +82,8 @@ public class ServerRequestHandlerUtil {
 	public static void movePlayer(UUID requestId, Player server, String playerName, String direction)
 			throws RemoteException {
 
-		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
+		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))
+				&& (server.getGameState().getPlayerMap().containsKey(playerName))) {
 
 			// Moving the player
 			switch (direction) {
