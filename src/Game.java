@@ -14,13 +14,13 @@ public class Game {
 		 * Read command line arguments
 		 */
 		String registryHost;
-		Integer port;
+		Integer registryPort;
 		String playerName;
 		try {
-			port = Integer.parseInt(args[0]);
-			playerName = args[1];
-			registryHost = args.length > 2 ? args[2] : "localhost";
-		} catch (Exception e) {
+			registryHost = args[0];
+			registryPort = Integer.parseInt(args[1]);
+			playerName = args[2];
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
 			System.err.println(
 					"Wrong arguments. It should be: java Game [port-number] [player name] [tracker host, if not localhost]");
 			return;
@@ -31,7 +31,7 @@ public class Game {
 		 */
 		ITracker trackerStub;
 		try {
-			Registry registry = LocateRegistry.getRegistry(registryHost, Tracker.RMI_REGISTRY_PORT);
+			Registry registry = LocateRegistry.getRegistry(registryHost, registryPort);
 			trackerStub = (ITracker) registry.lookup(Tracker.TRACKER_STUB_REGISTRY_KEY);
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Unable to get Tracker Stub. Exiting Game." + e);
@@ -45,7 +45,8 @@ public class Game {
 		IPlayer player = new Player(playerName, trackerStub);
 
 		try {
-			playerStub = (IPlayer) UnicastRemoteObject.exportObject(player, port);
+			playerStub = (IPlayer) UnicastRemoteObject.exportObject(player, 0); // port 0 -> picks a random available
+																				// port for RMI service port
 		} catch (RemoteException e) {
 			System.err.println("Unable to create player stub. Exiting." + e);
 			return;
