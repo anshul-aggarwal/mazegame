@@ -51,18 +51,22 @@ public class ServerRequestHandlerUtil {
 	 */
 	public static void deregisterPlayer(UUID requestId, Player server, String playerName) throws RemoteException {
 
-		// Removing player from tracker and server
-		ITracker trackerStub = server.getTrackerStub();
-		server.setPlayerMap(trackerStub.removePlayer(playerName));
-		server.getGameState().removePlayer(playerName);
+		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))
+				&& (server.getGameState().getPlayerMap().containsKey(playerName))) {
 
-		// Maintaining a copy with backup server
-		IPlayer backupServerStub = server.getBackupServer();
-		if (backupServerStub != null) {
-			backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			// Removing player from tracker and server
+			ITracker trackerStub = server.getTrackerStub();
+			server.setPlayerMap(trackerStub.removePlayer(playerName));
+			server.getGameState().removePlayer(playerName);
+
+			// Maintaining a copy with backup server
+			IPlayer backupServerStub = server.getBackupServer();
+			if (backupServerStub != null) {
+				backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			}
+
+			System.out.println("Successfully Removed Player: " + playerName);
 		}
-
-		System.out.println("Successfully Removed Player: " + playerName);
 	}
 
 	/**
@@ -71,25 +75,42 @@ public class ServerRequestHandlerUtil {
 	 * @param server
 	 * @param playerName
 	 * @param direction
+	 * @throws RemoteException
 	 */
-	public static void movePlayer(UUID requestId, Player server, String playerName, String direction) {
-		switch (direction) {
-		case "1":
-			server.getGameState().movePlayer(playerName, 0, -1);
-			System.out.println("Moved West");
-			break;
-		case "2":
-			server.getGameState().movePlayer(playerName, 1, 0);
-			System.out.println("Moved South");
-			break;
-		case "3":
-			server.getGameState().movePlayer(playerName, 0, 1);
-			System.out.println("Moved East");
-			break;
-		case "4":
-			server.getGameState().movePlayer(playerName, -1, 0);
-			System.out.println("Moved North");
-			break;
+	public static void movePlayer(UUID requestId, Player server, String playerName, String direction)
+			throws RemoteException {
+
+		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
+
+			// Moving the player
+			switch (direction) {
+			case "1":
+				server.getGameState().movePlayer(playerName, 0, -1);
+				System.out.println(playerName + " Moving West");
+				break;
+			case "2":
+				server.getGameState().movePlayer(playerName, 1, 0);
+				System.out.println(playerName + " Moving South");
+				break;
+			case "3":
+				server.getGameState().movePlayer(playerName, 0, 1);
+				System.out.println(playerName + " Moving East");
+				break;
+			case "4":
+				server.getGameState().movePlayer(playerName, -1, 0);
+				System.out.println(playerName + " Moving North");
+				break;
+			}
+
+			// Maintaining the copy with backup server,
+			// FIXME: need optimized mechanism, instead of setting the whole gameState
+			// every time
+			IPlayer backupServerStub = server.getBackupServer();
+			if (backupServerStub != null) {
+				backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			}
+
+			System.out.println("Player movement complete");
 		}
 	}
 

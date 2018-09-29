@@ -16,11 +16,15 @@ public class PlayerActionUtil {
 	 */
 	public static void move(IPlayer player, String direction) throws RemoteException {
 		GameState gameState = null;
+		UUID requestId = UUID.randomUUID();
 		try {
-			UUID requestId = UUID.randomUUID();
 			gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
-		} catch (RemoteException e) {
-
+		} catch (RemoteException e1) {
+			try {
+				gameState = player.getBackupServer().movePlayer(requestId, player.getPlayerName(), direction);
+			} catch (RemoteException e2) {
+				System.err.println("Unkown Error. Not able to move player");
+			}
 		}
 		if (gameState != null) {
 			player.setGameState(gameState);
@@ -36,8 +40,12 @@ public class PlayerActionUtil {
 		GameState gameState = null;
 		try {
 			gameState = player.getPrimaryServer().getGameState();
-		} catch (RemoteException e) {
-
+		} catch (RemoteException e1) {
+			try {
+				gameState = player.getBackupServer().getGameState();
+			} catch (RemoteException e2) {
+				System.err.println("Unkown Error. Not able to refresh state");
+			}
 		}
 		if (gameState != null) {
 			player.setGameState(gameState);

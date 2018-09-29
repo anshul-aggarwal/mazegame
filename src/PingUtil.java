@@ -4,22 +4,27 @@ public class PingUtil extends Thread {
 
 	// This class handles the pinging between players
 	IPlayer player;
+	boolean terminated;
 
 	public PingUtil(IPlayer player) {
 		this.player = player;
+		this.terminated = false;
 	}
 
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (!terminated) {
 				pingNextPlayer(player.getPingPlayer());
 				Thread.sleep(500);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void terminate() {
+		this.terminated = true;
 	}
 
 	public void pingNextPlayer(IPlayer pingPlayer) throws RemoteException {

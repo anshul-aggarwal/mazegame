@@ -64,7 +64,7 @@ public class Game {
 		 * Pinging thread
 		 *
 		 */
-		Thread ping = new PingUtil(player);
+		PingUtil ping = new PingUtil(player);
 		ping.start();
 
 		/**
@@ -97,11 +97,11 @@ public class Game {
 				}
 			}
 
-			ping.interrupt();
+			ping.terminate();
 			sc.close();
 			System.out.println("Game Over!");
 			System.exit(0);
-		} catch (Exception e) {
+		} catch (RemoteException e) {
 			System.err.println("Game exception: " + e.toString());
 			e.printStackTrace();
 		}
