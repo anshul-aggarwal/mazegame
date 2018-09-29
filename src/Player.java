@@ -68,6 +68,11 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
+	public void updatePlayerMap() throws RemoteException {
+		this.setPlayerMap(trackerStub.getPlayerMap());
+	}
+
+	@Override
 	public boolean respondToPing() {
 		// System.out.println("I was pinged.");
 		return true;
@@ -194,7 +199,7 @@ public class Player implements IPlayer, Serializable {
 	public boolean markCompletedRequest(UUID requestId, GameState updatedGameState) throws RemoteException {
 		boolean markedCompletedRequest = ServerRequestHandlerUtil.markCompletedRequest(requestId);
 		if (markedCompletedRequest) {
-			this.setGameState(gameState);
+			this.setGameState(updatedGameState);
 		}
 		return markedCompletedRequest;
 	}

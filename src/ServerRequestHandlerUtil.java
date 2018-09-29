@@ -33,6 +33,8 @@ public class ServerRequestHandlerUtil {
 			server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
 			server.getGameState().addPlayer(playerName);
 
+			DebugUtil.printPlayers(server, "Called from ServerRequestHandlerUtil#register");
+
 			// Maintaining a copy with backup server
 			if (backupServerStub != null) {
 				backupServerStub.markCompletedRequest(requestId, server.getGameState());

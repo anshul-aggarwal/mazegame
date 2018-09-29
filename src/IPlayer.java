@@ -56,6 +56,15 @@ public interface IPlayer extends Remote {
 	void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) throws RemoteException;
 
 	/**
+	 * Update playerMap using Tracker. This function is used when the player has
+	 * been idle for quite a long time, and the Primary,Backup server (have crashed)
+	 * information is too old to be true.
+	 * 
+	 * @throws RemoteException
+	 */
+	void updatePlayerMap() throws RemoteException;
+
+	/**
 	 *
 	 * @throws RemoteException
 	 */

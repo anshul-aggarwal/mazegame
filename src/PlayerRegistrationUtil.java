@@ -93,6 +93,10 @@ public class PlayerRegistrationUtil {
 	 * @param localPlayerStub
 	 */
 	public static boolean deregister(String playerName, IPlayer localPlayerStub) {
+
+		System.out.println("Trying to deregister" + playerName);
+		DebugUtil.printPlayers(localPlayerStub, "Called from PlayerRegistrationUtil#deregister");
+
 		UUID requestId = UUID.randomUUID();
 		try {
 			IPlayer primary = localPlayerStub.getPrimaryServer();

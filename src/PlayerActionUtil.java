@@ -16,16 +16,24 @@ public class PlayerActionUtil {
 	 */
 	public static void move(IPlayer player, String direction) throws RemoteException {
 		GameState gameState = null;
+		boolean completedRequest = true;
 		UUID requestId = UUID.randomUUID();
-		try {
-			gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
-		} catch (RemoteException e1) {
+
+		do {
+			completedRequest = true;
 			try {
-				gameState = player.getBackupServer().movePlayer(requestId, player.getPlayerName(), direction);
-			} catch (RemoteException e2) {
-				System.err.println("Unkown Error. Not able to move player");
+				gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
+			} catch (RemoteException e1) {
+				try {
+					gameState = player.getBackupServer().movePlayer(requestId, player.getPlayerName(), direction);
+				} catch (RemoteException e2) {
+					// System.err.println("Unkown Error. Not able to move player");
+					player.updatePlayerMap();
+					completedRequest = false;
+				}
 			}
-		}
+		} while (!completedRequest);
+
 		if (gameState != null) {
 			player.setGameState(gameState);
 		}
@@ -37,16 +45,25 @@ public class PlayerActionUtil {
 	 * @throws RemoteException
 	 */
 	public static void refresh(IPlayer player) throws RemoteException {
+
 		GameState gameState = null;
-		try {
-			gameState = player.getPrimaryServer().getGameState();
-		} catch (RemoteException e1) {
+		boolean completedRequest = true;
+
+		do {
+			completedRequest = true;
 			try {
-				gameState = player.getBackupServer().getGameState();
-			} catch (RemoteException e2) {
-				System.err.println("Unkown Error. Not able to refresh state");
+				gameState = player.getPrimaryServer().getGameState();
+			} catch (RemoteException e1) {
+				try {
+					gameState = player.getBackupServer().getGameState();
+				} catch (RemoteException e2) {
+					// System.err.println("Unkown Error. Not able to refresh state");
+					player.updatePlayerMap();
+					completedRequest = false;
+				}
 			}
-		}
+		} while (!completedRequest);
+
 		if (gameState != null) {
 			player.setGameState(gameState);
 		}
