@@ -1,7 +1,9 @@
 # mazegame GUI
 Maze Game - Distributed Systems Assignment 1
 
-This is a new project, and the code we are currently writing needs to be merged into this project.
+## Update Sat, Sep 29: Merged GUI and game code (Incomplete).
 
-Contains dummy text in maze.
-The input operations have not been handled yet.
+Warning: This is 2 commits behind the current game code. Do not use for testing.  
+
+Warning2: The code is incomplete, and does not work as intended. Should only be used for __reference__.
+
