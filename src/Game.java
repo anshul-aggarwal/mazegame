@@ -4,6 +4,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Game {
@@ -77,7 +78,14 @@ public class Game {
 
 			while (!terminateGame) {
 				printGameState(player.getGameState());
-				String input = sc.next();
+
+				String input;
+				try {
+					input = sc.next();
+				} catch (NoSuchElementException e) {
+					input = "9";
+				}
+
 				switch (input) {
 				case "0":
 					PlayerActionUtil.refresh(player);
