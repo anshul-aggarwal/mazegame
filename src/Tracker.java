@@ -113,6 +113,7 @@ public class Tracker implements ITracker {
 			registry.bind(TRACKER_STUB_REGISTRY_KEY, stub);
 		} catch (RemoteException | AlreadyBoundException e) {
 			System.err.println("Unable to bind Tracker stub to registry");
+			return;
 		}
 
 		System.out.println("Tracker Ready!");

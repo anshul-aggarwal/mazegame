@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ public class MazeGui extends JFrame {
 	// private static final Integer MAZE_WIDTH = 800;
 	// private static final Integer MAZE_HEIGHT = 600;
 
+	// private final Random random = new Random();
 	private final IPlayer player;
 	private final Integer N;
 
@@ -43,6 +45,7 @@ public class MazeGui extends JFrame {
 		// this.setSize(MAZE_WIDTH, MAZE_HEIGHT);
 		this.pack();
 		this.setLocationRelativeTo(null);
+		// this.setLocation(random.nextInt(1000), random.nextInt(1000));
 
 		// Show Window
 		this.setVisible(true);
@@ -52,10 +55,13 @@ public class MazeGui extends JFrame {
 
 		// Initialize playerInfoPanel & MazeData
 		this.playerInfoPanel = new JList<>();
+		this.playerInfoPanel.setBorder(BorderFactory.createTitledBorder("Player Information"));
+
 		this.mazeData = new JTextField[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				this.mazeData[i][j] = new JTextField();
+				this.mazeData[i][j].setBorder(BorderFactory.createRaisedSoftBevelBorder());
 			}
 		}
 
@@ -69,6 +75,7 @@ public class MazeGui extends JFrame {
 			}
 		}
 		JSplitPane containerPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+		containerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		// containerPanel.setDividerLocation(SPLIT_LOCATION);
 		this.add(containerPanel);
 
