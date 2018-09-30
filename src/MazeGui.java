@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 
 public class MazeGui extends JFrame {
 
@@ -61,7 +63,8 @@ public class MazeGui extends JFrame {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				this.mazeData[i][j] = new JTextField();
-				this.mazeData[i][j].setBorder(BorderFactory.createRaisedSoftBevelBorder());
+				this.mazeData[i][j]
+						.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.GRAY));
 			}
 		}
 
