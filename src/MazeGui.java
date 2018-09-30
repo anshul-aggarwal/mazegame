@@ -42,6 +42,7 @@ public class MazeGui extends JFrame {
 		this.setTitle("Player " + this.player.getPlayerName() + " -- MazeGame");
 		// this.setSize(MAZE_WIDTH, MAZE_HEIGHT);
 		this.pack();
+		this.setLocationRelativeTo(null);
 
 		// Show Window
 		this.setVisible(true);
