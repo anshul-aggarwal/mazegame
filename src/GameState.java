@@ -10,6 +10,7 @@ public class GameState implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -2594162138114462023L;
+	private static final String TREASURE_MARKING = "*";
 
 	private final MazeDimensions mazeDimensions;
 	LinkedHashMap<String, IPlayer> playerMap;
@@ -75,7 +76,7 @@ public class GameState implements Serializable {
 			int Y = ThreadLocalRandom.current().nextInt(0, N);
 			int X = ThreadLocalRandom.current().nextInt(0, N);
 			if (this.maze[Y][X] == null) {
-				this.maze[Y][X] = "T";
+				this.maze[Y][X] = TREASURE_MARKING;
 				break;
 			}
 		}
@@ -115,12 +116,12 @@ public class GameState implements Serializable {
 			return;
 		}
 		// there is another player in the location
-		if (this.maze[newY][newX] != null && !"T".equals(this.maze[newY][newX])) {
+		if (this.maze[newY][newX] != null && !TREASURE_MARKING.equals(this.maze[newY][newX])) {
 			System.out.println("there is player " + this.maze[newY][newX]);
 			return;
 		}
 
-		boolean isTreasure = "T".equals(this.maze[newY][newX]);
+		boolean isTreasure = TREASURE_MARKING.equals(this.maze[newY][newX]);
 		this.maze[newY][newX] = this.maze[Y][X];
 		this.maze[Y][X] = null;
 		this.playerLocationMap.put(playerName, new Location(newY, newX));
