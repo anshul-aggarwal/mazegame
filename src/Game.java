@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Game {
 
 	public static void main(String args[]) {
+
 		/**
 		 * Read command line arguments
 		 */
@@ -21,8 +22,8 @@ public class Game {
 			registryPort = Integer.parseInt(args[1]);
 			playerName = args[2];
 		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-			System.err.println(
-					"Wrong arguments. It should be: java Game [port-number] [player name] [tracker host, if not localhost]");
+			System.err.println("Wrong arguments. It should be: java Game [registry-ip] [registry-port] [playerId]");
+			e.printStackTrace();
 			return;
 		}
 
@@ -35,6 +36,7 @@ public class Game {
 			trackerStub = (ITracker) registry.lookup(Tracker.TRACKER_STUB_REGISTRY_KEY);
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Unable to get Tracker Stub. Exiting Game." + e);
+			e.printStackTrace();
 			return;
 		}
 
@@ -49,6 +51,7 @@ public class Game {
 																				// port for RMI service port
 		} catch (RemoteException e) {
 			System.err.println("Unable to create player stub. Exiting." + e);
+			e.printStackTrace();
 			return;
 		}
 
@@ -59,6 +62,7 @@ public class Game {
 			PlayerRegistrationUtil.register(playerStub);
 		} catch (RemoteException | InterruptedException e) {
 			System.err.println("Unable to register new player. Exiting");
+			e.printStackTrace();
 			return;
 		}
 
@@ -70,6 +74,18 @@ public class Game {
 		ping.start();
 
 		/**
+		 * Start GUI
+		 */
+		MazeGui mazeGui;
+		try {
+			mazeGui = new MazeGui(player);
+		} catch (RemoteException e) {
+			System.err.println("Unable to render UI. Exiting");
+			e.printStackTrace();
+			return;
+		}
+
+		/**
 		 * Start Game
 		 */
 		System.out.println("Started Game");
@@ -78,7 +94,9 @@ public class Game {
 			boolean terminateGame = false;
 
 			while (!terminateGame) {
-				printGameState(player.getGameState());
+
+				mazeGui.updateUI();
+				// printGameState(player.getGameState());
 
 				String input;
 				try {
@@ -111,8 +129,9 @@ public class Game {
 			System.out.println("Game Over!");
 			System.exit(0);
 		} catch (RemoteException e) {
-			System.err.println("Game exception: " + e.toString());
+			System.err.println("Game exception: ");
 			e.printStackTrace();
+			return;
 		}
 	}
 
@@ -133,4 +152,5 @@ public class Game {
 			System.out.println(name + " = " + playerScore.get(name));
 		}
 	}
+
 }
