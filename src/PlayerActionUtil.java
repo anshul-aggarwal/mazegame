@@ -23,11 +23,10 @@ public class PlayerActionUtil {
 			completedRequest = true;
 			try {
 				gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
-			} catch (RemoteException e1) {
+			} catch (RemoteException | NullPointerException e1) {
 				try {
 					gameState = player.getBackupServer().movePlayer(requestId, player.getPlayerName(), direction);
-				} catch (RemoteException e2) {
-					// System.err.println("Unkown Error. Not able to move player");
+				} catch (RemoteException | NullPointerException e2) {
 					player.updatePlayerMap();
 					completedRequest = false;
 				}
@@ -53,11 +52,10 @@ public class PlayerActionUtil {
 			completedRequest = true;
 			try {
 				gameState = player.getPrimaryServer().getGameState();
-			} catch (RemoteException e1) {
+			} catch (RemoteException | NullPointerException e1) {
 				try {
 					gameState = player.getBackupServer().getGameState();
-				} catch (RemoteException e2) {
-					// System.err.println("Unkown Error. Not able to refresh state");
+				} catch (RemoteException | NullPointerException e2) {
 					player.updatePlayerMap();
 					completedRequest = false;
 				}
