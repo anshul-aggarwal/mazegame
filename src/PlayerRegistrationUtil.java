@@ -31,60 +31,64 @@ public class PlayerRegistrationUtil {
 		LinkedHashMap<String, IPlayer> playerMap = null;
 		Iterator<Map.Entry<String, IPlayer>> playerMapIterator = null;
 
-		/**
-		 * Keep on trying unless registered
-		 */
-		UUID requestId = UUID.randomUUID();
-		do {
-			// Get player Map from Tracker
-			playerMap = trackerStub.getPlayerMap();
-			gameState = null;
+		synchronized (DummyLock.class) {
+			LogUtil.printMsg("Trying to register myself");
 
-			if (playerMap.size() == 0) {
-				playerMap = trackerStub.addFirstPlayer(playerName, localPlayerStub);
-			} else {
+			/**
+			 * Keep on trying unless registered
+			 */
+			UUID requestId = UUID.randomUUID();
+			do {
+				// Get player Map from Tracker
+				playerMap = trackerStub.getPlayerMap();
+				gameState = null;
+				if (playerMap.size() == 0) {
+					playerMap = trackerStub.addFirstPlayer(playerName, localPlayerStub);
+				} else {
 
-				// Try registering with primary player
-				playerMapIterator = playerMap.entrySet().iterator();
-				Map.Entry<String, IPlayer> primaryServer = playerMapIterator.next();
-				String primaryName = primaryServer.getKey();
-				IPlayer primaryStub = primaryServer.getValue();
+					// Try registering with primary player
+					playerMapIterator = playerMap.entrySet().iterator();
+					Map.Entry<String, IPlayer> primaryServer = playerMapIterator.next();
+					String primaryName = primaryServer.getKey();
+					IPlayer primaryStub = primaryServer.getValue();
 
-				try {
-					gameState = primaryStub.registerPlayer(requestId, playerName, localPlayerStub);
-					playerMap = gameState.getPlayerMap();
-				} catch (RemoteException e) {
+					try {
+						gameState = primaryStub.registerPlayer(requestId, playerName, localPlayerStub);
+						playerMap = gameState.getPlayerMap();
+					} catch (RemoteException e) {
 
-					// If primary Server is not responding
-					trackerStub.removePlayer(primaryName);
+						// If primary Server is not responding
+						trackerStub.removePlayer(primaryName);
 
-					if (playerMapIterator.hasNext()) {
+						if (playerMapIterator.hasNext()) {
 
-						// Try registering with backup Server
-						Map.Entry<String, IPlayer> backupServer = playerMapIterator.next();
-						String backupName = backupServer.getKey();
-						IPlayer backupStub = backupServer.getValue();
+							// Try registering with backup Server
+							Map.Entry<String, IPlayer> backupServer = playerMapIterator.next();
+							String backupName = backupServer.getKey();
+							IPlayer backupStub = backupServer.getValue();
 
-						try {
-							gameState = backupStub.registerPlayer(requestId, playerName, localPlayerStub);
-							playerMap = gameState.getPlayerMap();
-						} catch (RemoteException e1) {
-							trackerStub.removePlayer(backupName);
-							Thread.sleep(800); // Sleep (wait) for the system to generate new Primary Server
+							try {
+								gameState = backupStub.registerPlayer(requestId, playerName, localPlayerStub);
+								playerMap = gameState.getPlayerMap();
+							} catch (RemoteException e1) {
+								trackerStub.removePlayer(backupName);
+								Thread.sleep(800); // Sleep (wait) for the system to generate new Primary Server
+							}
 						}
 					}
 				}
-			}
-		} while (!playerMap.containsKey(playerName));
+			} while (!playerMap.containsKey(playerName));
 
-		// Set game state inside current player
-		if (gameState == null) {
-			// Happens only when you are the primary Server/First player to be registered
-			gameState = new GameState(trackerStub.getMazeDimensions());
-			gameState.setPlayerMap(playerMap);
-			gameState.addPlayer(playerName);
+			// Set game state inside current player
+			if (gameState == null) {
+				// Happens only when you are the primary Server/First player to be registered
+				gameState = new GameState(trackerStub.getMazeDimensions());
+				gameState.setPlayerMap(playerMap);
+				gameState.addPlayer(playerName);
+			}
+			localPlayerStub.setGameState(gameState);
+
 		}
-		localPlayerStub.setGameState(gameState);
 	}
 
 	/**
@@ -108,6 +112,7 @@ public class PlayerRegistrationUtil {
 				gameState = localPlayerStub.getPrimaryServer().deregisterPlayer(requestId, playerName);
 			} catch (RemoteException e1) {
 				try {
+					LogUtil.printMsg("Failed to deregister with PS, trying with BS");
 					gameState = localPlayerStub.getBackupServer().deregisterPlayer(requestId, playerName);
 				} catch (RemoteException | NullPointerException e2) {
 					localPlayerStub.updatePlayerMap();

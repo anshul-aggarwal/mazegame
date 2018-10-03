@@ -88,10 +88,10 @@ public class MazeGui extends JFrame {
 
 	public void updateUI() throws RemoteException {
 		GameState gameState = this.player.getGameState();
-		// synchronized (gameState) {
-		this.updatePlayerList(gameState);
-		this.updateMaze(gameState);
-		// }
+		synchronized (DummyLock.class) {
+			this.updatePlayerList(gameState);
+			this.updateMaze(gameState);
+		}
 	}
 
 	private void updateMaze(GameState gameState) throws RemoteException {

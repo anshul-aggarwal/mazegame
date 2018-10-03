@@ -30,7 +30,7 @@ public class ServerRequestHandlerUtil {
 
 			// Registering with tracker and Primary Server
 			ITracker trackerStub = server.getTrackerStub();
-			synchronized (ServerRequestHandlerUtil.class) {
+			synchronized (DummyLock.class) {
 				server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
 				server.getGameState().addPlayer(playerName);
 				updateBackupServer(requestId, server);
@@ -55,9 +55,10 @@ public class ServerRequestHandlerUtil {
 
 			// Removing player from tracker and server
 			ITracker trackerStub = server.getTrackerStub();
-			synchronized (ServerRequestHandlerUtil.class) {
+			synchronized (DummyLock.class) {
 				GameState gameState = server.getGameState();
 				if (gameState.getPlayerMap().containsKey(playerName)) {
+					LogUtil.printMsg("Removing " + playerName);
 					server.setPlayerMap(trackerStub.removePlayer(playerName));
 					gameState.removePlayer(playerName);
 				}
@@ -106,7 +107,7 @@ public class ServerRequestHandlerUtil {
 			}
 
 			if (dY != 0 || dX != 0) {
-				synchronized (ServerRequestHandlerUtil.class) {
+				synchronized (DummyLock.class) {
 					GameState gameState = server.getGameState();
 					if (gameState.getPlayerMap().containsKey(playerName)) {
 						gameState.movePlayer(playerName, dY, dX);
