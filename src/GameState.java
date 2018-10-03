@@ -70,7 +70,7 @@ public class GameState implements Serializable {
 		}
 	}
 
-	private synchronized void addTreasure() {
+	private void addTreasure() {
 		int N = this.mazeDimensions.getN();
 		while (true) {
 			int Y = ThreadLocalRandom.current().nextInt(0, N);
@@ -82,7 +82,7 @@ public class GameState implements Serializable {
 		}
 	}
 
-	public synchronized void addPlayer(String playerName) {
+	public void addPlayer(String playerName) {
 		int N = this.mazeDimensions.getN();
 		while (true) {
 			int Y = ThreadLocalRandom.current().nextInt(0, N);
@@ -96,7 +96,7 @@ public class GameState implements Serializable {
 		}
 	}
 
-	public synchronized void removePlayer(String playerName) {
+	public void removePlayer(String playerName) {
 		int Y = this.playerLocationMap.get(playerName).getY();
 		int X = this.playerLocationMap.get(playerName).getX();
 		this.maze[Y][X] = null;
@@ -104,7 +104,7 @@ public class GameState implements Serializable {
 		this.playerScore.remove(playerName);
 	}
 
-	public synchronized void movePlayer(String playerName, int dY, int dX) {
+	public void movePlayer(String playerName, int dY, int dX) {
 		int N = this.mazeDimensions.getN();
 		int Y = this.playerLocationMap.get(playerName).getY();
 		int X = this.playerLocationMap.get(playerName).getX();

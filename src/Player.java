@@ -99,6 +99,11 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
+	public String getBackupServerName() {
+		return this.backup != null ? this.backup.getKey() : null;
+	}
+
+	@Override
 	public boolean isPrimary() {
 		return (this.primary != null) && (this.primary.getKey().equals(this.playerName));
 	}
@@ -167,7 +172,7 @@ public class Player implements IPlayer, Serializable {
 				}
 			}
 
-			System.out.println("Ping target is " + pingPlayer.getKey());
+			LogUtil.printMsg("Ping target is " + pingPlayer.getKey());
 		}
 
 		this.pingPlayer = pingPlayer;

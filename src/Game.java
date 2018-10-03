@@ -88,7 +88,7 @@ public class Game {
 		/**
 		 * Start Game
 		 */
-		System.out.println("Started Game");
+		LogUtil.printMsg("Started Game");
 		try {
 			Scanner sc = new Scanner(System.in);
 			boolean terminateGame = false;
@@ -116,17 +116,18 @@ public class Game {
 					PlayerActionUtil.move(player, input);
 					break;
 				case "9":
-					terminateGame = PlayerRegistrationUtil.deregister(playerName, playerStub);
+					PlayerRegistrationUtil.deregister(playerName, playerStub);
+					terminateGame = true;
 					break;
 				default:
-					System.out.println("Invalid input. Press 9 to terminate");
+					LogUtil.printMsg("Invalid input. Press 9 to terminate");
 					break;
 				}
 			}
 
 			ping.terminate();
 			sc.close();
-			System.out.println("Game Over!");
+			LogUtil.printMsg("Game Over!");
 			System.exit(0);
 		} catch (RemoteException e) {
 			System.err.println("Game exception: ");

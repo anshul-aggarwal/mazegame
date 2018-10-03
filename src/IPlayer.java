@@ -101,6 +101,13 @@ public interface IPlayer extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
+	String getBackupServerName() throws RemoteException;
+
+	/**
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
 	boolean isPrimary() throws RemoteException;
 
 	/**

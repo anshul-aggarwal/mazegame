@@ -87,12 +87,15 @@ public class MazeGui extends JFrame {
 	}
 
 	public void updateUI() throws RemoteException {
-		this.updatePlayerList();
-		this.updateMaze();
+		GameState gameState = this.player.getGameState();
+		// synchronized (gameState) {
+		this.updatePlayerList(gameState);
+		this.updateMaze(gameState);
+		// }
 	}
 
-	private void updateMaze() throws RemoteException {
-		String[][] maze = this.player.getGameState().getMaze();
+	private void updateMaze(GameState gameState) throws RemoteException {
+		String[][] maze = gameState.getMaze();
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				String mazeTextValue = maze[i][j] == null ? "" : maze[i][j];
@@ -101,9 +104,9 @@ public class MazeGui extends JFrame {
 		}
 	}
 
-	private void updatePlayerList() throws RemoteException {
-		Map<String, Integer> scoreMap = this.player.getGameState().getPlayerScore();
-		Set<String> players = this.player.getGameState().getPlayerMap().keySet(); // Sorted Order Guaranteed
+	private void updatePlayerList(GameState gameState) throws RemoteException {
+		Map<String, Integer> scoreMap = gameState.getPlayerScore();
+		Set<String> players = gameState.getPlayerMap().keySet(); // Sorted Order Guaranteed
 		List<String> playerInfoList = new ArrayList<>();
 		int i = 0;
 		for (String pid : players) {

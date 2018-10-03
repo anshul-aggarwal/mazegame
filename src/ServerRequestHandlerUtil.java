@@ -26,21 +26,17 @@ public class ServerRequestHandlerUtil {
 			throws RemoteException {
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
-			ITracker trackerStub = server.getTrackerStub();
-			IPlayer backupServerStub = server.getBackupServer();
+			LogUtil.printPlayers(server, "Server: register " + playerName + " [" + requestId + "]");
 
 			// Registering with tracker and Primary Server
-			server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
-			server.getGameState().addPlayer(playerName);
-
-			DebugUtil.printPlayers(server, "Called from ServerRequestHandlerUtil#register");
-
-			// Maintaining a copy with backup server
-			if (backupServerStub != null) {
-				backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			ITracker trackerStub = server.getTrackerStub();
+			synchronized (ServerRequestHandlerUtil.class) {
+				server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
+				server.getGameState().addPlayer(playerName);
+				updateBackupServer(requestId, server);
 			}
 
-			System.out.println("Successfully registered player: " + playerName);
+			LogUtil.printMsg("Server: Successfully registered player: " + playerName + " [" + requestId + "]");
 		}
 	}
 
@@ -53,21 +49,22 @@ public class ServerRequestHandlerUtil {
 	 */
 	public static void deregisterPlayer(UUID requestId, Player server, String playerName) throws RemoteException {
 
-		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))
-				&& (server.getGameState().getPlayerMap().containsKey(playerName))) {
+		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
+
+			LogUtil.printPlayers(server, "Server: #deregisterPlayer " + playerName + " [" + requestId + "]");
 
 			// Removing player from tracker and server
 			ITracker trackerStub = server.getTrackerStub();
-			server.setPlayerMap(trackerStub.removePlayer(playerName));
-			server.getGameState().removePlayer(playerName);
-
-			// Maintaining a copy with backup server
-			IPlayer backupServerStub = server.getBackupServer();
-			if (backupServerStub != null) {
-				backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			synchronized (ServerRequestHandlerUtil.class) {
+				GameState gameState = server.getGameState();
+				if (gameState.getPlayerMap().containsKey(playerName)) {
+					server.setPlayerMap(trackerStub.removePlayer(playerName));
+					gameState.removePlayer(playerName);
+				}
+				updateBackupServer(requestId, server);
 			}
 
-			System.out.println("Successfully Removed Player: " + playerName);
+			LogUtil.printMsg("Server: Successfully Removed Player: " + playerName + " [" + requestId + "]");
 		}
 	}
 
@@ -82,39 +79,73 @@ public class ServerRequestHandlerUtil {
 	public static void movePlayer(UUID requestId, Player server, String playerName, String direction)
 			throws RemoteException {
 
-		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))
-				&& (server.getGameState().getPlayerMap().containsKey(playerName))) {
+		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
+
+			LogUtil.printPlayers(server, "Server: movePlayer " + playerName + " [" + requestId + "]");
 
 			// Moving the player
+			int dY = 0;
+			int dX = 0;
 			switch (direction) {
 			case "1":
-				server.getGameState().movePlayer(playerName, 0, -1);
-				System.out.println(playerName + " Moving West");
+				dX = -1;
+				// LogUtil.printMsg(playerName + " Moving West");
 				break;
 			case "2":
-				server.getGameState().movePlayer(playerName, 1, 0);
-				System.out.println(playerName + " Moving South");
+				dY = 1;
+				// LogUtil.printMsg(playerName + " Moving South");
 				break;
 			case "3":
-				server.getGameState().movePlayer(playerName, 0, 1);
-				System.out.println(playerName + " Moving East");
+				dX = 1;
+				// LogUtil.printMsg(playerName + " Moving East");
 				break;
 			case "4":
-				server.getGameState().movePlayer(playerName, -1, 0);
-				System.out.println(playerName + " Moving North");
+				dY = -1;
+				// LogUtil.printMsg(playerName + " Moving North");
 				break;
 			}
 
-			// Maintaining the copy with backup server,
-			// FIXME: need optimized mechanism, instead of setting the whole gameState
-			// every time
-			IPlayer backupServerStub = server.getBackupServer();
-			if (backupServerStub != null) {
-				backupServerStub.markCompletedRequest(requestId, server.getGameState());
+			if (dY != 0 || dX != 0) {
+				synchronized (ServerRequestHandlerUtil.class) {
+					GameState gameState = server.getGameState();
+					if (gameState.getPlayerMap().containsKey(playerName)) {
+						gameState.movePlayer(playerName, dY, dX);
+					}
+					updateBackupServer(requestId, server);
+				}
 			}
 
-			System.out.println("Player movement complete");
+			LogUtil.printMsg("Server: Player movement complete" + " [" + requestId + "]");
 		}
+	}
+
+	private static void updateBackupServer(UUID requestId, Player server) throws RemoteException {
+
+		boolean updateSuccessful = true;
+		IPlayer backupServerStub;
+		do {
+			String backupServerName = server.getBackupServerName();
+			updateSuccessful = true;
+			try {
+				backupServerStub = server.getBackupServer();
+				if (backupServerStub != null) {
+					LogUtil.printMsg("Server: Trying to update BS: " + backupServerName + " [" + requestId + "]");
+					backupServerStub.markCompletedRequest(requestId, server.getGameState());
+				}
+			} catch (RemoteException e) {
+				/*
+				 * FIXME: Needs better handling
+				 * 
+				 * Handling for when adding a new player, BS goes down i.e. Before pinging
+				 * mechanism can detect that BS is down, Server detects this while pushing the
+				 * new state
+				 */
+				LogUtil.printMsg("Server: Removing BS -> " + backupServerName + " : NO RESPONSE");
+				server.setPlayerMap(server.getTrackerStub().removePlayer(backupServerName));
+				server.getGameState().removePlayer(backupServerName);
+				updateSuccessful = false;
+			}
+		} while (!updateSuccessful);
 	}
 
 	/**
@@ -123,6 +154,7 @@ public class ServerRequestHandlerUtil {
 	 * @return
 	 */
 	public static boolean markCompletedRequest(UUID requestId) {
+		LogUtil.printMsg("Marking Completed Request: " + requestId.toString());
 		return completedRequests.add(requestId);
 	}
 }

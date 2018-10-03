@@ -35,10 +35,10 @@ public class PingUtil extends Thread {
 					// player is active.");
 				}
 			} catch (RemoteException e) {
-				System.out.println("Ping Failed. The next player is dead.");
+				LogUtil.printMsg("Ping Failed. The next player is dead.");
 				PlayerRegistrationUtil.deregister(this.player.getPingPlayerName(), this.player);
 			} catch (Exception f) {
-				System.out.println("Ping failed");
+				LogUtil.printMsg("Ping failed. Some other unknown Exception");
 			}
 	}
 

@@ -91,27 +91,35 @@ public class PlayerRegistrationUtil {
 	 * 
 	 * @param playerName
 	 * @param localPlayerStub
+	 * @throws RemoteException
 	 */
-	public static boolean deregister(String playerName, IPlayer localPlayerStub) {
+	public static void deregister(String playerName, IPlayer localPlayerStub) throws RemoteException {
 
-		System.out.println("Trying to deregister" + playerName);
-		DebugUtil.printPlayers(localPlayerStub, "Called from PlayerRegistrationUtil#deregister");
+		LogUtil.printMsg("Trying to deregister " + playerName);
+		LogUtil.printPlayers(localPlayerStub, "In PlayerRegistrationUtil#deregister");
 
 		UUID requestId = UUID.randomUUID();
-		try {
-			IPlayer primary = localPlayerStub.getPrimaryServer();
-			GameState gameState = primary.deregisterPlayer(requestId, playerName);
-			localPlayerStub.setGameState(gameState);
-		} catch (RemoteException e) {
+
+		GameState gameState = null;
+		boolean completedRequest = true;
+		do {
+			completedRequest = true;
 			try {
-				IPlayer backup = localPlayerStub.getBackupServer();
-				GameState gameState = backup.deregisterPlayer(requestId, playerName);
-				localPlayerStub.setGameState(gameState);
+				gameState = localPlayerStub.getPrimaryServer().deregisterPlayer(requestId, playerName);
 			} catch (RemoteException e1) {
-				return false;
+				try {
+					gameState = localPlayerStub.getBackupServer().deregisterPlayer(requestId, playerName);
+				} catch (RemoteException | NullPointerException e2) {
+					localPlayerStub.updatePlayerMap();
+					completedRequest = false;
+				}
 			}
+		} while (!completedRequest);
+
+		if (gameState != null) {
+			localPlayerStub.setGameState(gameState);
 		}
-		return true;
+
 	}
 
 }

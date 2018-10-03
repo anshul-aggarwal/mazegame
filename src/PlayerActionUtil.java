@@ -23,7 +23,7 @@ public class PlayerActionUtil {
 			completedRequest = true;
 			try {
 				gameState = player.getPrimaryServer().movePlayer(requestId, player.getPlayerName(), direction);
-			} catch (RemoteException | NullPointerException e1) {
+			} catch (RemoteException e1) {
 				try {
 					gameState = player.getBackupServer().movePlayer(requestId, player.getPlayerName(), direction);
 				} catch (RemoteException | NullPointerException e2) {
@@ -52,7 +52,7 @@ public class PlayerActionUtil {
 			completedRequest = true;
 			try {
 				gameState = player.getPrimaryServer().getGameState();
-			} catch (RemoteException | NullPointerException e1) {
+			} catch (RemoteException e1) {
 				try {
 					gameState = player.getBackupServer().getGameState();
 				} catch (RemoteException | NullPointerException e2) {
