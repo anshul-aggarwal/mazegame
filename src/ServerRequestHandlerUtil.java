@@ -31,6 +31,17 @@ public class ServerRequestHandlerUtil {
 			// Registering with tracker and Primary Server
 			ITracker trackerStub = server.getTrackerStub();
 			synchronized (DummyLock.class) {
+
+				/*
+				 * Removing PS since BS was contacted to register the new player
+				 */
+				String primaryServerName = server.getBackupServerName();
+				if (server.isBackup()) {
+					LogUtil.printMsg("Server: Removing PS -> " + primaryServerName + " : BACKUP CONTACTED TO REGISTER");
+					server.setPlayerMap(server.getTrackerStub().removePlayer(primaryServerName));
+					server.getGameState().removePlayer(primaryServerName);
+				}
+
 				server.setPlayerMap(trackerStub.addPlayer(playerName, playerStub));
 				server.getGameState().addPlayer(playerName);
 				updateBackupServer(requestId, server);
