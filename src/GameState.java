@@ -104,6 +104,7 @@ public class GameState implements Serializable {
 			this.maze[Y][X] = null;
 			this.playerLocationMap.remove(playerName);
 			this.playerScore.remove(playerName);
+			LogUtil.printMsg("PlayerLocationMap: " + this.playerLocationMap.toString());
 		}
 	}
 
