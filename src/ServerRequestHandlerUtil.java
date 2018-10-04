@@ -90,19 +90,19 @@ public class ServerRequestHandlerUtil {
 			switch (direction) {
 			case "1":
 				dX = -1;
-				// LogUtil.printMsg(playerName + " Moving West");
+				LogUtil.printMsg(playerName + " Moving West");
 				break;
 			case "2":
 				dY = 1;
-				// LogUtil.printMsg(playerName + " Moving South");
+				LogUtil.printMsg(playerName + " Moving South");
 				break;
 			case "3":
 				dX = 1;
-				// LogUtil.printMsg(playerName + " Moving East");
+				LogUtil.printMsg(playerName + " Moving East");
 				break;
 			case "4":
 				dY = -1;
-				// LogUtil.printMsg(playerName + " Moving North");
+				LogUtil.printMsg(playerName + " Moving North");
 				break;
 			}
 
