@@ -13,7 +13,7 @@ public class GameState implements Serializable {
 	private static final String TREASURE_MARKING = "*";
 
 	private final MazeDimensions mazeDimensions;
-	LinkedHashMap<String, IPlayer> playerMap;
+	private LinkedHashMap<String, IPlayer> playerMap;
 	private String[][] maze;
 	private Map<String, Location> playerLocationMap;
 	private Map<String, Integer> playerScore;
