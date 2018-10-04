@@ -97,11 +97,14 @@ public class GameState implements Serializable {
 	}
 
 	public void removePlayer(String playerName) {
-		int Y = this.playerLocationMap.get(playerName).getY();
-		int X = this.playerLocationMap.get(playerName).getX();
-		this.maze[Y][X] = null;
-		this.playerLocationMap.remove(playerName);
-		this.playerScore.remove(playerName);
+		Location location = this.playerLocationMap.get(playerName);
+		if (location != null) {
+			int Y = location.getY();
+			int X = location.getX();
+			this.maze[Y][X] = null;
+			this.playerLocationMap.remove(playerName);
+			this.playerScore.remove(playerName);
+		}
 	}
 
 	public void movePlayer(String playerName, int dY, int dX) {
