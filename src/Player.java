@@ -39,6 +39,7 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	// --- PLAYER METHODS BEGIN ----
+	@Override
 	public ITracker getTrackerStub() {
 		return trackerStub;
 	}
@@ -85,6 +86,10 @@ public class Player implements IPlayer, Serializable {
 
 	public IPlayer getPrimaryServer() {
 		return this.primary != null ? this.primary.getValue() : null;
+	}
+
+	public String getPrimaryServerName() {
+		return this.primary != null ? this.primary.getKey() : null;
 	}
 
 	public IPlayer getBackupServer() {

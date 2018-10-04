@@ -35,7 +35,7 @@ public class ServerRequestHandlerUtil {
 				/*
 				 * Removing PS since BS was contacted to register the new player
 				 */
-				String primaryServerName = server.getBackupServerName();
+				String primaryServerName = server.getPrimaryServerName();
 				if (server.isBackup()) {
 					LogUtil.printMsg("Server: Removing PS -> " + primaryServerName + " : BACKUP CONTACTED TO REGISTER");
 					server.setPlayerMap(server.getTrackerStub().removePlayer(primaryServerName));

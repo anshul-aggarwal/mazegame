@@ -109,8 +109,9 @@ public class GameState implements Serializable {
 
 	public void movePlayer(String playerName, int dY, int dX) {
 		int N = this.mazeDimensions.getN();
-		int Y = this.playerLocationMap.get(playerName).getY();
-		int X = this.playerLocationMap.get(playerName).getX();
+		Location location = this.playerLocationMap.get(playerName);
+		int Y = location.getY();
+		int X = location.getX();
 		int newY = Y + dY;
 		int newX = X + dX;
 		LogUtil.printMsg("Original (X,Y): (" + X + "," + Y + ")");
@@ -129,7 +130,8 @@ public class GameState implements Serializable {
 		boolean isTreasure = TREASURE_MARKING.equals(this.maze[newY][newX]);
 		this.maze[newY][newX] = this.maze[Y][X];
 		this.maze[Y][X] = null;
-		this.playerLocationMap.put(playerName, new Location(newY, newX));
+		// this.playerLocationMap.put(playerName, new Location(newY, newX));
+		location.setXAndY(newY, newX);
 		LogUtil.printMsg("PlayerLocationMap: " + this.playerLocationMap.toString());
 		if (isTreasure) {
 			this.playerScore.put(playerName, this.playerScore.get(playerName) + 1);

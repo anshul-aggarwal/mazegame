@@ -19,4 +19,14 @@ public class Location implements Serializable {
 	public int getX() {
 		return this.X;
 	}
+
+	public void setXAndY(int Y, int X) {
+		this.Y = Y;
+		this.X = X;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + this.X + "," + this.Y + ")";
+	}
 }
