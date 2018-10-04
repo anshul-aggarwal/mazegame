@@ -130,6 +130,7 @@ public class GameState implements Serializable {
 		this.maze[newY][newX] = this.maze[Y][X];
 		this.maze[Y][X] = null;
 		this.playerLocationMap.put(playerName, new Location(newY, newX));
+		LogUtil.printMsg("PlayerLocationMap: " + this.playerLocationMap.toString());
 		if (isTreasure) {
 			this.playerScore.put(playerName, this.playerScore.get(playerName) + 1);
 			this.addTreasure();
