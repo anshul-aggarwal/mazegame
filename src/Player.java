@@ -39,8 +39,6 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	// --- PLAYER METHODS BEGIN ----
-
-	@Override
 	public ITracker getTrackerStub() {
 		return trackerStub;
 	}
@@ -74,41 +72,33 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public boolean respondToPing() {
-		// System.out.println("I was pinged.");
 		return true;
 	}
 
-	@Override
 	public String getPingPlayerName() {
 		return this.pingPlayer != null ? this.pingPlayer.getKey() : null;
 	}
 
-	@Override
 	public IPlayer getPingPlayer() {
 		return this.pingPlayer != null ? this.pingPlayer.getValue() : null;
 	}
 
-	@Override
 	public IPlayer getPrimaryServer() {
 		return this.primary != null ? this.primary.getValue() : null;
 	}
 
-	@Override
 	public IPlayer getBackupServer() {
 		return this.backup != null ? this.backup.getValue() : null;
 	}
 
-	@Override
 	public String getBackupServerName() {
 		return this.backup != null ? this.backup.getKey() : null;
 	}
 
-	@Override
 	public boolean isPrimary() {
 		return (this.primary != null) && (this.primary.getKey().equals(this.playerName));
 	}
 
-	@Override
 	public boolean isBackup() {
 		return (this.backup != null) && (this.backup.getKey().equals(this.playerName));
 	}
@@ -147,24 +137,24 @@ public class Player implements IPlayer, Serializable {
 	 * primary server.
 	 */
 	private void setPingTarget() {
-		Map.Entry<String, IPlayer> pingPlayer = null;
+		Map.Entry<String, IPlayer> newPingTarget = null;
 		LinkedHashMap<String, IPlayer> playerMap = gameState.getPlayerMap();
 
 		if (playerMap.size() > 1) {
 
 			Iterator<Map.Entry<String, IPlayer>> iter = playerMap.entrySet().iterator();
-			pingPlayer = iter.next();
+			newPingTarget = iter.next();
 
-			if (pingPlayer.getKey().equals(playerName)) {
+			if (newPingTarget.getKey().equals(playerName)) {
 				while (iter.hasNext()) {
-					pingPlayer = iter.next();
+					newPingTarget = iter.next();
 				}
 			} else {
-				Map.Entry<String, IPlayer> currentPlayer = pingPlayer;
+				Map.Entry<String, IPlayer> currentPlayer = newPingTarget;
 				while (iter.hasNext()) {
 					Map.Entry<String, IPlayer> nextPlayer = iter.next();
 					if (nextPlayer.getKey().equals(playerName)) {
-						pingPlayer = currentPlayer;
+						newPingTarget = currentPlayer;
 						break;
 					} else {
 						currentPlayer = nextPlayer;
@@ -172,10 +162,10 @@ public class Player implements IPlayer, Serializable {
 				}
 			}
 
-			LogUtil.printMsg("Ping target is " + pingPlayer.getKey());
+			LogUtil.printMsg("Ping target is " + newPingTarget.getKey());
 		}
 
-		this.pingPlayer = pingPlayer;
+		this.pingPlayer = newPingTarget;
 	}
 
 	// --- Communication State Update Private Methods End ---

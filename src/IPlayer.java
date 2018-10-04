@@ -70,53 +70,6 @@ public interface IPlayer extends Remote {
 	 */
 	boolean respondToPing() throws RemoteException;
 
-	/**
-	 *
-	 * @throws RemoteException
-	 */
-	String getPingPlayerName() throws RemoteException;
-
-	/**
-	 *
-	 * @throws RemoteException
-	 */
-	IPlayer getPingPlayer() throws RemoteException;
-
-	/**
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	IPlayer getPrimaryServer() throws RemoteException;
-
-	/**
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	IPlayer getBackupServer() throws RemoteException;
-
-	/**
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	String getBackupServerName() throws RemoteException;
-
-	/**
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	boolean isPrimary() throws RemoteException;
-
-	/**
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	boolean isBackup() throws RemoteException;
-
 	// --- PLAYER METHODS END ----
 
 	// --- SERVER METHODS BEGIN ---

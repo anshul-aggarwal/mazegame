@@ -3,10 +3,10 @@ import java.rmi.RemoteException;
 public class PingUtil extends Thread {
 
 	// This class handles the pinging between players
-	IPlayer player;
+	Player player;
 	boolean terminated;
 
-	public PingUtil(IPlayer player) {
+	public PingUtil(Player player) {
 		this.player = player;
 		this.terminated = false;
 	}

@@ -4,36 +4,29 @@ import java.util.Scanner;
 
 public class GameThread extends Thread {
 
-	private final IPlayer localPlayerStub;
+	private final Player player;
 
-	public GameThread(IPlayer localPlayerStub) {
-		this.localPlayerStub = localPlayerStub;
+	public GameThread(Player player) {
+		this.player = player;
 	}
 
 	@Override
 	public void run() {
 
-		/**
+		/*
 		 * Pinging thread
 		 *
 		 */
-		PingUtil ping = new PingUtil(localPlayerStub);
+		PingUtil ping = new PingUtil(player);
 		ping.start();
 		LogUtil.printMsg("Fixed Pinging");
 
-		/**
+		/*
 		 * Start GUI
 		 */
-		MazeGui mazeGui;
-		try {
-			mazeGui = new MazeGui(localPlayerStub);
-		} catch (RemoteException e) {
-			System.err.println("Unable to render UI. Exiting");
-			e.printStackTrace();
-			return;
-		}
+		MazeGui mazeGui = new MazeGui(player);
 
-		/**
+		/*
 		 * Start Game
 		 */
 		LogUtil.printMsg("Started Game");
@@ -55,16 +48,16 @@ public class GameThread extends Thread {
 
 				switch (input) {
 				case "0":
-					PlayerActionUtil.refresh(localPlayerStub);
+					PlayerActionUtil.refresh(player);
 					break;
 				case "1":
 				case "2":
 				case "3":
 				case "4":
-					PlayerActionUtil.move(localPlayerStub, input);
+					PlayerActionUtil.move(player, input);
 					break;
 				case "9":
-					PlayerRegistrationUtil.deregister(localPlayerStub.getPlayerName(), localPlayerStub);
+					PlayerRegistrationUtil.deregister(player.getPlayerName(), player);
 					terminateGame = true;
 					break;
 				default:
@@ -76,10 +69,8 @@ public class GameThread extends Thread {
 			sc.close();
 			LogUtil.printMsg("Game Over!");
 		} catch (RemoteException e) {
-			System.err.println("Game exception: ");
-			e.printStackTrace();
+			System.err.println("Game exception: " + e);
 		}
-
 		System.exit(0);
 	}
 

@@ -14,7 +14,7 @@ public class PlayerActionUtil {
 	 * @param direction
 	 * @throws RemoteException
 	 */
-	public static void move(IPlayer player, String direction) throws RemoteException {
+	public static void move(Player player, String direction) throws RemoteException {
 		GameState gameState = null;
 		boolean completedRequest = true;
 		UUID requestId = UUID.randomUUID();
@@ -43,7 +43,7 @@ public class PlayerActionUtil {
 	 * @param player
 	 * @throws RemoteException
 	 */
-	public static void refresh(IPlayer player) throws RemoteException {
+	public static void refresh(Player player) throws RemoteException {
 
 		GameState gameState = null;
 		boolean completedRequest = true;

@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +25,13 @@ public class MazeGui extends JFrame {
 	// private static final Integer MAZE_HEIGHT = 600;
 
 	// private final Random random = new Random();
-	private final IPlayer player;
+	private final Player player;
 	private final Integer N;
 
 	private JList<String> playerInfoPanel;
 	private JTextField[][] mazeData;
 
-	public MazeGui(IPlayer player) throws RemoteException {
+	public MazeGui(Player player) {
 
 		// Initialize final fields
 		this.player = player;
@@ -53,7 +52,7 @@ public class MazeGui extends JFrame {
 		this.setVisible(true);
 	}
 
-	private void createMainUI() throws RemoteException {
+	private void createMainUI() {
 
 		// Initialize playerInfoPanel & MazeData
 		this.playerInfoPanel = new JList<>();
@@ -86,7 +85,7 @@ public class MazeGui extends JFrame {
 		this.updateUI();
 	}
 
-	public void updateUI() throws RemoteException {
+	public void updateUI() {
 		GameState gameState = this.player.getGameState();
 		synchronized (DummyLock.class) {
 			this.updatePlayerList(gameState);
@@ -94,7 +93,7 @@ public class MazeGui extends JFrame {
 		}
 	}
 
-	private void updateMaze(GameState gameState) throws RemoteException {
+	private void updateMaze(GameState gameState) {
 		String[][] maze = gameState.getMaze();
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -104,7 +103,7 @@ public class MazeGui extends JFrame {
 		}
 	}
 
-	private void updatePlayerList(GameState gameState) throws RemoteException {
+	private void updatePlayerList(GameState gameState) {
 		Map<String, Integer> scoreMap = gameState.getPlayerScore();
 		Set<String> players = gameState.getPlayerMap().keySet(); // Sorted Order Guaranteed
 		List<String> playerInfoList = new ArrayList<>();

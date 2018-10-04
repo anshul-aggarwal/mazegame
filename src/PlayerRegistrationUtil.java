@@ -1,4 +1,5 @@
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,30 +21,44 @@ public class PlayerRegistrationUtil {
 	 * This method will also update the communication/Game state maintained inside
 	 * the player object!
 	 *
-	 * @param localPlayerStub
+	 * @param player
 	 * @throws InterruptedException
 	 */
-	public static void register(IPlayer localPlayerStub) throws RemoteException, InterruptedException {
+	public static void register(Player player) throws RemoteException, InterruptedException {
 
-		String playerName = localPlayerStub.getPlayerName();
-		ITracker trackerStub = localPlayerStub.getTrackerStub();
+		/*
+		 * Create Player Stub
+		 */
+		IPlayer playerStub = (IPlayer) UnicastRemoteObject.exportObject(player, 0); // port 0 -> picks a random
+																					// available port for RMI service
+																					// port
+
+		/*
+		 * Register Player
+		 */
+		String playerName = player.getPlayerName();
+		ITracker trackerStub = player.getTrackerStub();
 		GameState gameState = null;
 		LinkedHashMap<String, IPlayer> playerMap = null;
 		Iterator<Map.Entry<String, IPlayer>> playerMapIterator = null;
 
 		synchronized (DummyLock.class) {
+
 			LogUtil.printMsg("Trying to register myself");
 
-			/**
+			/*
 			 * Keep on trying unless registered
 			 */
 			UUID requestId = UUID.randomUUID();
+
 			do {
+
 				// Get player Map from Tracker
 				playerMap = trackerStub.getPlayerMap();
 				gameState = null;
+
 				if (playerMap.size() == 0) {
-					playerMap = trackerStub.addFirstPlayer(playerName, localPlayerStub);
+					playerMap = trackerStub.addFirstPlayer(playerName, playerStub);
 				} else {
 
 					// Try registering with primary player
@@ -53,7 +68,7 @@ public class PlayerRegistrationUtil {
 					IPlayer primaryStub = primaryServer.getValue();
 
 					try {
-						gameState = primaryStub.registerPlayer(requestId, playerName, localPlayerStub);
+						gameState = primaryStub.registerPlayer(requestId, playerName, playerStub);
 						playerMap = gameState.getPlayerMap();
 					} catch (RemoteException e) {
 
@@ -68,25 +83,29 @@ public class PlayerRegistrationUtil {
 							IPlayer backupStub = backupServer.getValue();
 
 							try {
-								gameState = backupStub.registerPlayer(requestId, playerName, localPlayerStub);
+								gameState = backupStub.registerPlayer(requestId, playerName, playerStub);
 								playerMap = gameState.getPlayerMap();
 							} catch (RemoteException e1) {
 								trackerStub.removePlayer(backupName);
-								Thread.sleep(800); // Sleep (wait) for the system to generate new Primary Server
+								DummyLock.class.wait(800); // Sleep (wait) for the system to generate new Primary Server
 							}
 						}
 					}
 				}
 			} while (!playerMap.containsKey(playerName));
 
-			// Set game state inside current player
+			/*
+			 * Set game state inside current player
+			 */
 			if (gameState == null) {
-				// Happens only when you are the primary Server/First player to be registered
+				/*
+				 * Happens only when you are the primary Server/First player to be registered
+				 */
 				gameState = new GameState(trackerStub.getMazeDimensions());
 				gameState.setPlayerMap(playerMap);
 				gameState.addPlayer(playerName);
 			}
-			localPlayerStub.setGameState(gameState);
+			player.setGameState(gameState);
 
 		}
 	}
@@ -94,13 +113,13 @@ public class PlayerRegistrationUtil {
 	/**
 	 * 
 	 * @param playerName
-	 * @param localPlayerStub
+	 * @param player
 	 * @throws RemoteException
 	 */
-	public static void deregister(String playerName, IPlayer localPlayerStub) throws RemoteException {
+	public static void deregister(String playerName, Player player) throws RemoteException {
 
 		LogUtil.printMsg("Trying to deregister " + playerName);
-		LogUtil.printPlayers(localPlayerStub, "In PlayerRegistrationUtil#deregister");
+		LogUtil.printPlayers(player, "In PlayerRegistrationUtil#deregister");
 
 		UUID requestId = UUID.randomUUID();
 
@@ -109,20 +128,20 @@ public class PlayerRegistrationUtil {
 		do {
 			completedRequest = true;
 			try {
-				gameState = localPlayerStub.getPrimaryServer().deregisterPlayer(requestId, playerName);
+				gameState = player.getPrimaryServer().deregisterPlayer(requestId, playerName);
 			} catch (RemoteException e1) {
 				try {
 					LogUtil.printMsg("Failed to deregister with PS, trying with BS");
-					gameState = localPlayerStub.getBackupServer().deregisterPlayer(requestId, playerName);
+					gameState = player.getBackupServer().deregisterPlayer(requestId, playerName);
 				} catch (RemoteException | NullPointerException e2) {
-					localPlayerStub.updatePlayerMap();
+					player.updatePlayerMap();
 					completedRequest = false;
 				}
 			}
 		} while (!completedRequest);
 
 		if (gameState != null) {
-			localPlayerStub.setGameState(gameState);
+			player.setGameState(gameState);
 		}
 
 	}
