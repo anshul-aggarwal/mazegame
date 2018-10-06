@@ -25,14 +25,14 @@ public class GameThread extends Thread {
 		/*
 		 * Start Game
 		 */
-		// LogUtil.printMsg("Started Game");
+		LogUtil.printMsg("Started Game");
 		try {
 			Scanner sc = new Scanner(System.in);
 			boolean terminateGame = false;
 
 			while (!terminateGame) {
 
-				System.out.print(GAME_MENU_MSG);
+				// System.out.print(GAME_MENU_MSG);
 
 				String input;
 				try {

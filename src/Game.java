@@ -49,7 +49,7 @@ public class Game {
 				System.err.println("Unable to register new player. Exiting ");
 				return;
 			}
-			// LogUtil.printMsg("I am Registered");
+			LogUtil.printMsg("I am Registered");
 
 			/*
 			 * Pinging thread
@@ -57,7 +57,7 @@ public class Game {
 			 */
 			PingThread pingThread = new PingThread(player);
 			pingThread.start();
-			// LogUtil.printMsg("Started Pinging");
+			LogUtil.printMsg("Started Pinging");
 
 			/*
 			 * Start Game Thread
