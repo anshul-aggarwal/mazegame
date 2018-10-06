@@ -42,70 +42,67 @@ public class PlayerRegistrationUtil {
 		LinkedHashMap<String, IPlayer> playerMap = null;
 		Iterator<Map.Entry<String, IPlayer>> playerMapIterator = null;
 
-		synchronized (DummyLock.class) {
+		/*
+		 * Keep on trying unless registered
+		 */
+		UUID requestId = UUID.randomUUID();
 
-			/*
-			 * Keep on trying unless registered
-			 */
-			UUID requestId = UUID.randomUUID();
+		do {
 
-			do {
+			// Get player Map from Tracker
+			playerMap = trackerStub.getPlayerMap();
+			gameState = null;
 
-				// Get player Map from Tracker
-				playerMap = trackerStub.getPlayerMap();
-				gameState = null;
+			if (playerMap.size() == 0) {
+				playerMap = trackerStub.addFirstPlayer(playerName, playerStub);
+			} else {
 
-				if (playerMap.size() == 0) {
-					playerMap = trackerStub.addFirstPlayer(playerName, playerStub);
-				} else {
+				// Try registering with primary player
+				playerMapIterator = playerMap.entrySet().iterator();
+				Map.Entry<String, IPlayer> primaryServer = playerMapIterator.next();
+				String primaryName = primaryServer.getKey();
+				IPlayer primaryStub = primaryServer.getValue();
 
-					// Try registering with primary player
-					playerMapIterator = playerMap.entrySet().iterator();
-					Map.Entry<String, IPlayer> primaryServer = playerMapIterator.next();
-					String primaryName = primaryServer.getKey();
-					IPlayer primaryStub = primaryServer.getValue();
+				try {
+					gameState = primaryStub.registerPlayer(requestId, playerName, playerStub);
+					playerMap = gameState.getPlayerMap();
+				} catch (RemoteException e) {
 
-					try {
-						gameState = primaryStub.registerPlayer(requestId, playerName, playerStub);
-						playerMap = gameState.getPlayerMap();
-					} catch (RemoteException e) {
+					// If primary Server is not responding
+					trackerStub.removePlayer(primaryName);
 
-						// If primary Server is not responding
-						trackerStub.removePlayer(primaryName);
+					if (playerMapIterator.hasNext()) {
 
-						if (playerMapIterator.hasNext()) {
+						// Try registering with backup Server
+						Map.Entry<String, IPlayer> backupServer = playerMapIterator.next();
+						String backupName = backupServer.getKey();
+						IPlayer backupStub = backupServer.getValue();
 
-							// Try registering with backup Server
-							Map.Entry<String, IPlayer> backupServer = playerMapIterator.next();
-							String backupName = backupServer.getKey();
-							IPlayer backupStub = backupServer.getValue();
-
-							try {
-								gameState = backupStub.registerPlayer(requestId, playerName, playerStub);
-								playerMap = gameState.getPlayerMap();
-							} catch (RemoteException e1) {
-								trackerStub.removePlayer(backupName);
-								DummyLock.class.wait(800); // Sleep (wait) for the system to generate new Primary Server
-							}
+						try {
+							gameState = backupStub.registerPlayer(requestId, playerName, playerStub);
+							playerMap = gameState.getPlayerMap();
+						} catch (RemoteException e1) {
+							trackerStub.removePlayer(backupName);
+							DummyLock.class.wait(800); // Sleep (wait) for the system to generate new Primary Server
 						}
 					}
 				}
-			} while (!playerMap.containsKey(playerName));
-
-			/*
-			 * Set game state inside current player
-			 */
-			if (gameState == null) {
-				/*
-				 * Happens only when you are the primary Server/First player to be registered
-				 */
-				gameState = new GameState(trackerStub.getMazeDimensions());
-				gameState.setPlayerMap(playerMap);
-				gameState.addPlayer(playerName);
 			}
-			player.setGameState(gameState);
+		} while (!playerMap.containsKey(playerName));
 
+		/*
+		 * Set game state inside current player
+		 */
+		if (gameState == null) {
+			/*
+			 * Happens only when you are the primary Server/First player to be registered
+			 */
+			gameState = new GameState(trackerStub.getMazeDimensions());
+			gameState.setPlayerMap(playerMap);
+			gameState.addPlayer(playerName);
 		}
+		player.setGameState(gameState);
+
 	}
 
 	/**

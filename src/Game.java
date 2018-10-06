@@ -39,21 +39,30 @@ public class Game {
 		 */
 		Player player = new Player(playerName, trackerStub);
 
-		/*
-		 * Register the player
-		 */
-		try {
-			PlayerRegistrationUtil.register(player);
-		} catch (RemoteException | InterruptedException e) {
-			System.err.println("Unable to register new player. Exiting ");
-			return;
-		}
+		synchronized (DummyLock.class) {
+			/*
+			 * Register the player
+			 */
+			try {
+				PlayerRegistrationUtil.register(player);
+			} catch (RemoteException | InterruptedException e) {
+				System.err.println("Unable to register new player. Exiting ");
+				return;
+			}
 
-		/*
-		 * Start Game Thread
-		 */
-		GameThread gameThread = new GameThread(player);
-		gameThread.start();
+			/*
+			 * Pinging thread
+			 *
+			 */
+			PingThread pingThread = new PingThread(player);
+			pingThread.start();
+
+			/*
+			 * Start Game Thread
+			 */
+			GameThread gameThread = new GameThread(player, pingThread);
+			gameThread.start();
+		}
 	}
 
 }

@@ -8,20 +8,15 @@ public class GameThread extends Thread {
 			+ "\n3) Move East" + "\n4) Move North" + "\n9) Exit" + "\nPlease Enter your Choice: ";
 
 	private final Player player;
+	private final PingThread pingThread;
 
-	public GameThread(Player player) {
+	public GameThread(Player player, PingThread pingThread) {
 		this.player = player;
+		this.pingThread = pingThread;
 	}
 
 	@Override
 	public void run() {
-
-		/*
-		 * Pinging thread
-		 *
-		 */
-		PingThread ping = new PingThread(player);
-		ping.start();
 
 		/*
 		 * Start GUI
@@ -67,7 +62,7 @@ public class GameThread extends Thread {
 					break;
 				}
 			}
-			ping.terminate();
+			this.pingThread.terminate();
 			sc.close();
 			System.out.println("Game Over!");
 		} catch (RemoteException e) {
