@@ -129,12 +129,16 @@ public class GameState implements Serializable {
 		int X = location.getX();
 		int newY = Y + dY;
 		int newX = X + dX;
+		// LogUtil.printMsg("Original (X,Y): (" + X + "," + Y + ")");
+		// LogUtil.printMsg("New (X,Y): (" + newX + "," + newY + ")");
+
 		// out of bound
 		if (newY < 0 || newX < 0 || newY >= N || newX >= N) {
 			return;
 		}
 		// there is another player in the location
 		if (this.maze[newY][newX] != null && !TREASURE_MARKING.equals(this.maze[newY][newX])) {
+			// LogUtil.printMsg("there is player " + this.maze[newY][newX]);
 			return;
 		}
 
@@ -143,6 +147,7 @@ public class GameState implements Serializable {
 		this.maze[Y][X] = null;
 		// this.playerLocationMap.put(playerName, new Location(newY, newX));
 		location.setXAndY(newY, newX);
+		// LogUtil.printMsg("PlayerLocationMap: " + this.playerLocationMap.toString());
 		if (isTreasure) {
 			this.playerScore.put(playerName, this.playerScore.get(playerName) + 1);
 			this.addTreasure();

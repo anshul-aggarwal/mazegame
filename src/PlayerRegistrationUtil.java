@@ -42,6 +42,8 @@ public class PlayerRegistrationUtil {
 		LinkedHashMap<String, IPlayer> playerMap = null;
 		Iterator<Map.Entry<String, IPlayer>> playerMapIterator = null;
 
+		// LogUtil.printMsg("Trying to register myself");
+
 		/*
 		 * Keep on trying unless registered
 		 */
@@ -112,6 +114,9 @@ public class PlayerRegistrationUtil {
 	 * @throws RemoteException
 	 */
 	public static void deregister(String playerName, Player player) throws RemoteException {
+
+		// LogUtil.printMsg("Trying to deregister " + playerName);
+		// LogUtil.printPlayers(player, "In PlayerRegistrationUtil#deregister");
 
 		UUID requestId = UUID.randomUUID();
 

@@ -17,7 +17,6 @@ public class GameThread extends Thread {
 
 	@Override
 	public void run() {
-
 		/*
 		 * Start GUI
 		 */
@@ -26,6 +25,7 @@ public class GameThread extends Thread {
 		/*
 		 * Start Game
 		 */
+		// LogUtil.printMsg("Started Game");
 		try {
 			Scanner sc = new Scanner(System.in);
 			boolean terminateGame = false;
