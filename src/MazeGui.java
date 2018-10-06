@@ -23,6 +23,10 @@ public class MazeGui extends JFrame {
 	private static final Integer SPLIT_LOCATION = 120;
 	private static final Integer WINDOW_WIDTH_MULTIPLIER = 45;
 	private static final Integer WINDOW_HEIGHT_MULTIPLIER = 32;
+	private static final Color TREASURE_COLOR = new Color(205, 255, 153);
+	private static final Color NORMAL_SQUARE_COLOR = Color.WHITE;
+	private static final Color CURRENT_PLAYER_COLOR = new Color(255, 178, 102);
+	private static final Color OTHER_PLAYER_COLOR = new Color(191, 223, 255);
 
 	// private final Random random = new Random();
 	private final Player player;
@@ -77,6 +81,7 @@ public class MazeGui extends JFrame {
 				this.mazeData[i][j].setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
 				this.mazeData[i][j].setEditable(false);
 				this.mazeData[i][j].setHorizontalAlignment(SwingConstants.CENTER);
+				this.mazeData[i][j].setBackground(NORMAL_SQUARE_COLOR);
 			}
 		}
 
@@ -86,18 +91,6 @@ public class MazeGui extends JFrame {
 		rightPanel.setLayout(new GridLayout(N, N));
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				String mazeTextItem = mazeData[i][j].getText();
-				if (mazeTextItem.matches("[a-z][a-z]")) {
-					if (mazeTextItem.equals(playerName)) {
-						mazeData[i][j].setBackground(new Color(255, 178, 102));
-					} else {
-						mazeData[i][j].setBackground(new Color(191, 223, 255));
-					}
-				} else if (mazeTextItem.equals("*")) {
-					mazeData[i][j].setBackground(new Color(205, 255, 153));
-				} else {
-					mazeData[i][j].setBackground(new Color(255, 255, 255));
-				}
 				rightPanel.add(this.mazeData[i][j]);
 			}
 		}
@@ -111,8 +104,8 @@ public class MazeGui extends JFrame {
 	}
 
 	public void updateUI() {
-		GameState gameState = this.player.getGameState();
 		synchronized (DummyLock.class) {
+			GameState gameState = this.player.getGameState();
 			this.updatePlayerList(gameState);
 			this.updateMaze(gameState);
 		}
@@ -124,16 +117,14 @@ public class MazeGui extends JFrame {
 			for (int j = 0; j < N; j++) {
 				String mazeTextValue = maze[i][j] == null ? "" : maze[i][j];
 				this.mazeData[i][j].setText(mazeTextValue);
-				if (mazeTextValue.matches("[a-z][a-z]")) {
-					if (mazeTextValue.equals(playerName)) {
-						mazeData[i][j].setBackground(new Color(255, 178, 102));
-					} else {
-						mazeData[i][j].setBackground(new Color(191, 223, 255));
-					}
+				if (mazeTextValue.equals("")) {
+					this.mazeData[i][j].setBackground(NORMAL_SQUARE_COLOR);
 				} else if (mazeTextValue.equals("*")) {
-					mazeData[i][j].setBackground(new Color(205, 255, 153));
+					this.mazeData[i][j].setBackground(TREASURE_COLOR);
+				} else if (mazeTextValue.equals(this.playerName)) {
+					this.mazeData[i][j].setBackground(CURRENT_PLAYER_COLOR);
 				} else {
-					mazeData[i][j].setBackground(new Color(255, 255, 255));
+					this.mazeData[i][j].setBackground(OTHER_PLAYER_COLOR);
 				}
 			}
 		}
