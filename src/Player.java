@@ -51,8 +51,10 @@ public class Player implements IPlayer, Serializable {
 
 	@Override
 	public void setGameState(GameState gameState) {
-		this.gameState = gameState;
-		this.updateCommunicationState();
+		if ((this.gameState == null) || (this.gameState.getVersion() < gameState.getVersion())) {
+			this.gameState = gameState;
+			this.updateCommunicationState();
+		}
 	}
 
 	@Override

@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameState implements Serializable {
 
@@ -18,6 +19,8 @@ public class GameState implements Serializable {
 	private Map<String, Location> playerLocationMap;
 	private Map<String, Integer> playerScore;
 
+	private AtomicInteger version;
+
 	/**
 	 * Constructor
 	 *
@@ -29,6 +32,15 @@ public class GameState implements Serializable {
 		this.playerLocationMap = new HashMap<>();
 		this.playerScore = new HashMap<>();
 		this.generateMaze(mazeDimensions.getN(), mazeDimensions.getK());
+		this.version = new AtomicInteger();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getVersion() {
+		return this.version.get();
 	}
 
 	/**
@@ -37,6 +49,7 @@ public class GameState implements Serializable {
 	 */
 	public void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) {
 		this.playerMap = playerMap;
+		this.version.incrementAndGet();
 	}
 
 	/**
@@ -94,6 +107,7 @@ public class GameState implements Serializable {
 				break;
 			}
 		}
+		this.version.incrementAndGet();
 	}
 
 	public void removePlayer(String playerName) {
@@ -106,6 +120,7 @@ public class GameState implements Serializable {
 			this.playerScore.remove(playerName);
 			LogUtil.printMsg("PlayerLocationMap: " + this.playerLocationMap.toString());
 		}
+		this.version.incrementAndGet();
 	}
 
 	public void movePlayer(String playerName, int dY, int dX) {
@@ -138,6 +153,7 @@ public class GameState implements Serializable {
 			this.playerScore.put(playerName, this.playerScore.get(playerName) + 1);
 			this.addTreasure();
 		}
+		this.version.incrementAndGet();
 	}
 
 }
