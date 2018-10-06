@@ -1,6 +1,5 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public interface IPlayer extends Remote {
@@ -22,47 +21,11 @@ public interface IPlayer extends Remote {
 	String getPlayerName() throws RemoteException;
 
 	/**
-	 * This method will be called,
-	 * 
-	 * i) When this player is being promoted to a server and the server wants to set
-	 * the latest game state ii) After any action, setting the gamestate returned by
-	 * the server
-	 * 
-	 * TODO: Calling this function can in turn affect the
-	 * 
-	 * a) UI. So, Redraw the UI as soon as this function is complete. b)
-	 * Communication State. Update Ping player and PServer and BServer.
-	 *
-	 * @param gameState
-	 */
-	void setGameState(GameState gameState) throws RemoteException;
-
-	/**
 	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
 	GameState getGameState() throws RemoteException;
-
-	/**
-	 * This method will be called,
-	 * 
-	 * i) When updating playerMap (no affect on maze related state) ii) when server
-	 * updates the ping topology. (Update Ping player and PServer and BServer.)
-	 * 
-	 *
-	 * @param playerMap
-	 */
-	void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) throws RemoteException;
-
-	/**
-	 * Update playerMap using Tracker. This function is used when the player has
-	 * been idle for quite a long time, and the Primary,Backup server (have crashed)
-	 * information is too old to be true.
-	 * 
-	 * @throws RemoteException
-	 */
-	void updatePlayerMap() throws RemoteException;
 
 	/**
 	 *

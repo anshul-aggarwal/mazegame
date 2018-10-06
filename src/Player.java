@@ -50,32 +50,36 @@ public class Player implements IPlayer, Serializable {
 	}
 
 	@Override
-	public void setGameState(GameState gameState) {
+	public GameState getGameState() {
+		return this.gameState;
+	}
+
+	@Override
+	public boolean respondToPing() {
+		return true;
+	}
+
+	public synchronized void setGameState(GameState gameState) {
 		if ((this.gameState == null) || (this.gameState.getVersion() < gameState.getVersion())) {
 			this.gameState = gameState;
 			this.updateCommunicationState();
 		}
 	}
 
-	@Override
-	public GameState getGameState() {
-		return this.gameState;
-	}
-
-	@Override
 	public void setPlayerMap(LinkedHashMap<String, IPlayer> playerMap) {
 		this.gameState.setPlayerMap(playerMap);
 		this.updateCommunicationState();
 	}
 
-	@Override
+	/**
+	 * Update playerMap using Tracker. This function is used when the player has
+	 * been idle for quite a long time, and the Primary,Backup server (have crashed)
+	 * information is too old to be true.
+	 * 
+	 * @throws RemoteException
+	 */
 	public void updatePlayerMap() throws RemoteException {
 		this.setPlayerMap(trackerStub.getPlayerMap());
-	}
-
-	@Override
-	public boolean respondToPing() {
-		return true;
 	}
 
 	public String getPingPlayerName() {
