@@ -4,6 +4,9 @@ import java.util.Scanner;
 
 public class GameThread extends Thread {
 
+	private static final String GAME_MENU_MSG = "\n\n0) Refresh" + "\n1) Move West" + "\n2) Move South"
+			+ "\n3) Move East" + "\n4) Move North" + "\n9) Exit" + "\nPlease Enter your Choice: ";
+
 	private final Player player;
 
 	public GameThread(Player player) {
@@ -34,8 +37,7 @@ public class GameThread extends Thread {
 
 			while (!terminateGame) {
 
-				mazeGui.updateUI();
-				// printGameState(player.getGameState());
+				System.out.print(GAME_MENU_MSG);
 
 				String input;
 				try {
@@ -47,19 +49,21 @@ public class GameThread extends Thread {
 				switch (input) {
 				case "0":
 					PlayerActionUtil.refresh(player);
+					mazeGui.updateUI();
 					break;
 				case "1":
 				case "2":
 				case "3":
 				case "4":
 					PlayerActionUtil.move(player, input);
+					mazeGui.updateUI();
 					break;
 				case "9":
 					PlayerRegistrationUtil.deregister(player.getPlayerName(), player);
 					terminateGame = true;
 					break;
 				default:
-					System.out.println("Invalid input. Press 9 to terminate");
+					System.out.println("Invalid input.");
 					break;
 				}
 			}
