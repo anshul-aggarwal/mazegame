@@ -85,7 +85,8 @@ public class PlayerRegistrationUtil {
 							playerMap = gameState.getPlayerMap();
 						} catch (RemoteException e1) {
 							trackerStub.removePlayer(backupName);
-							DummyLock.class.wait(800); // Sleep (wait) for the system to generate new Primary Server
+							// DummyLock.class.wait(800); // Sleep (wait) for the system to generate new
+							// Primary Server
 						}
 					}
 				}
