@@ -17,8 +17,8 @@ public class GameThread extends Thread {
 		 * Pinging thread
 		 *
 		 */
-		PingUtil ping = new PingUtil(player);
-		ping.start();
+		PingThread pingThread = new PingThread(player);
+		pingThread.start();
 		// LogUtil.printMsg("Fixed Pinging");
 
 		/*
@@ -65,7 +65,7 @@ public class GameThread extends Thread {
 					break;
 				}
 			}
-			ping.terminate();
+			pingThread.terminate();
 			sc.close();
 			System.out.println("Game Over!");
 		} catch (RemoteException e) {
