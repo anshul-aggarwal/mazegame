@@ -11,7 +11,7 @@ public class GameState implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -2594162138114462023L;
-	private static final String TREASURE_MARKING = "*";
+	public static final String TREASURE_MARKING = "*";
 
 	private final MazeDimensions mazeDimensions;
 	private LinkedHashMap<String, IPlayer> playerMap;

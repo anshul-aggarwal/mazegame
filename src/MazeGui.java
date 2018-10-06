@@ -23,6 +23,10 @@ public class MazeGui extends JFrame {
 	private static final Integer SPLIT_LOCATION = 120;
 	private static final Integer WINDOW_WIDTH_MULTIPLIER = 45;
 	private static final Integer WINDOW_HEIGHT_MULTIPLIER = 32;
+	private static final Color TREASURE_COLOR = new Color(205, 255, 153);
+	private static final Color NORMAL_SQUARE_COLOR = Color.WHITE;
+	private static final Color CURRENT_PLAYER_COLOR = new Color(255, 178, 102);
+	private static final Color OTHER_PLAYER_COLOR = new Color(191, 223, 255);
 
 	// private final Random random = new Random();
 	private final Player player;
@@ -43,16 +47,16 @@ public class MazeGui extends JFrame {
 
 		// Create all Panels and set initial Data
 		this.createMainUI();
-		
-		//Set Window Dimensions
-		WINDOW_WIDTH = N*WINDOW_WIDTH_MULTIPLIER;
-		WINDOW_HEIGHT = N*WINDOW_HEIGHT_MULTIPLIER;
-		
+
+		// Set Window Dimensions
+		WINDOW_WIDTH = N * WINDOW_WIDTH_MULTIPLIER;
+		WINDOW_HEIGHT = N * WINDOW_HEIGHT_MULTIPLIER;
+
 		// Set Defaults
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Player " + playerName + " -- MazeGame");
 		this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-		//this.pack();
+		// this.pack();
 		this.setLocationRelativeTo(null);
 		// this.setLocation(random.nextInt(1000), random.nextInt(1000));
 
@@ -64,17 +68,20 @@ public class MazeGui extends JFrame {
 
 		// Initialize playerInfoPanel & MazeData
 		this.playerInfoPanel = new JList<>();
-		this.playerInfoPanel.setBorder(BorderFactory.createTitledBorder(null, "PLAYERS", TitledBorder.CENTER, TitledBorder.TOP, new Font(Font.MONOSPACED,Font.BOLD,13), Color.BLACK));
-		this.playerInfoPanel.setFont(new Font(Font.MONOSPACED,Font.BOLD,14));
+		this.playerInfoPanel.setBorder(BorderFactory.createTitledBorder(null, "PLAYERS", TitledBorder.CENTER,
+				TitledBorder.TOP, new Font(Font.MONOSPACED, Font.BOLD, 13), Color.BLACK));
+		this.playerInfoPanel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
 
 		this.mazeData = new JTextField[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				this.mazeData[i][j] = new JTextField();
-				this.mazeData[i][j].setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.GRAY));
+				this.mazeData[i][j]
+						.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.GRAY));
 				this.mazeData[i][j].setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
 				this.mazeData[i][j].setEditable(false);
 				this.mazeData[i][j].setHorizontalAlignment(SwingConstants.CENTER);
+				this.mazeData[i][j].setBackground(NORMAL_SQUARE_COLOR);
 			}
 		}
 
@@ -84,25 +91,6 @@ public class MazeGui extends JFrame {
 		rightPanel.setLayout(new GridLayout(N, N));
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				String mazeTextItem = mazeData[i][j].getText();
-				if (mazeTextItem.matches("[a-z][a-z]"))
-				{
-					if (mazeTextItem.equals(playerName))
-					{
-						mazeData[i][j].setBackground(new Color(255,178,102));
-					}
-					else
-					{
-						mazeData[i][j].setBackground(new Color(191,223,255));
-					}				}
-				else if (mazeTextItem.equals("*"))
-				{
-					mazeData[i][j].setBackground(new Color(205,255,153));
-				}
-				else
-				{
-					mazeData[i][j].setBackground(new Color(255,255,255));
-				}
 				rightPanel.add(this.mazeData[i][j]);
 			}
 		}
@@ -116,8 +104,8 @@ public class MazeGui extends JFrame {
 	}
 
 	public void updateUI() {
-		GameState gameState = this.player.getGameState();
 		synchronized (DummyLock.class) {
+			GameState gameState = this.player.getGameState();
 			this.updatePlayerList(gameState);
 			this.updateMaze(gameState);
 		}
@@ -129,24 +117,14 @@ public class MazeGui extends JFrame {
 			for (int j = 0; j < N; j++) {
 				String mazeTextValue = maze[i][j] == null ? "" : maze[i][j];
 				this.mazeData[i][j].setText(mazeTextValue);
-				if (mazeTextValue.matches("[a-z][a-z]"))
-				{
-					if (mazeTextValue.equals(playerName))
-					{
-						mazeData[i][j].setBackground(new Color(255,178,102));
-					}
-					else
-					{
-						mazeData[i][j].setBackground(new Color(191,223,255));
-					}
-				}
-				else if (mazeTextValue.equals("*"))
-				{
-					mazeData[i][j].setBackground(new Color(205,255,153));
-				}
-				else
-				{
-					mazeData[i][j].setBackground(new Color(255,255,255));
+				if (mazeTextValue.equals("")) {
+					this.mazeData[i][j].setBackground(NORMAL_SQUARE_COLOR);
+				} else if (mazeTextValue.equals(GameState.TREASURE_MARKING)) {
+					this.mazeData[i][j].setBackground(TREASURE_COLOR);
+				} else if (mazeTextValue.equals(this.playerName)) {
+					this.mazeData[i][j].setBackground(CURRENT_PLAYER_COLOR);
+				} else {
+					this.mazeData[i][j].setBackground(OTHER_PLAYER_COLOR);
 				}
 			}
 		}
@@ -159,15 +137,12 @@ public class MazeGui extends JFrame {
 		int i = 0;
 		for (String pid : players) {
 			String playerID = pid;
-			if (pid.equals(playerName))
-			{
+			if (pid.equals(playerName)) {
 				playerID = "<html><font color=#FF0000>" + pid;
-			}
-			else
-			{
+			} else {
 				playerID = "<html><font color=#000000>" + pid;
 			}
-			
+
 			StringBuilder sb = new StringBuilder(playerID);
 			sb.append(" - ");
 			sb.append(scoreMap.get(pid));
