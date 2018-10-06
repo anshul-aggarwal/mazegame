@@ -4,6 +4,9 @@ import java.util.Scanner;
 
 public class GameThread extends Thread {
 
+	private static final String GAME_MENU_MSG = "\n\n0) Refresh" + "\n1) Move West" + "\n2) Move South"
+			+ "\n3) Move East" + "\n4) Move North" + "\n9) Exit" + "\nPlease Enter your Choice: ";
+
 	private final Player player;
 
 	public GameThread(Player player) {
@@ -37,6 +40,7 @@ public class GameThread extends Thread {
 			while (!terminateGame) {
 
 				mazeGui.updateUI();
+				System.out.print(GAME_MENU_MSG);
 				// printGameState(player.getGameState());
 
 				String input;
