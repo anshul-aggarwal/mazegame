@@ -26,7 +26,8 @@ public class ServerRequestHandlerUtil {
 			throws RemoteException {
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
-			LogUtil.printPlayers(server, "Server: register " + playerName + " [" + requestId + "]");
+			// LogUtil.printPlayers(server, "Server: register " + playerName + " [" +
+			// requestId + "]");
 
 			// Registering with tracker and Primary Server
 			ITracker trackerStub = server.getTrackerStub();
@@ -37,7 +38,8 @@ public class ServerRequestHandlerUtil {
 				 */
 				String primaryServerName = server.getPrimaryServerName();
 				if (server.isBackup()) {
-					LogUtil.printMsg("Server: Removing PS -> " + primaryServerName + " : BACKUP CONTACTED TO REGISTER");
+					// LogUtil.printMsg("Server: Removing PS -> " + primaryServerName + " : BACKUP
+					// CONTACTED TO REGISTER");
 					server.setPlayerMap(server.getTrackerStub().removePlayer(primaryServerName));
 					server.getGameState().removePlayer(primaryServerName);
 				}
@@ -47,7 +49,8 @@ public class ServerRequestHandlerUtil {
 				updateBackupServer(requestId, server);
 			}
 
-			LogUtil.printMsg("Server: Successfully registered player: " + playerName + " [" + requestId + "]");
+			// LogUtil.printMsg("Server: Successfully registered player: " + playerName + "
+			// [" + requestId + "]");
 		}
 	}
 
@@ -62,21 +65,23 @@ public class ServerRequestHandlerUtil {
 
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
-			LogUtil.printPlayers(server, "Server: #deregisterPlayer " + playerName + " [" + requestId + "]");
+			// LogUtil.printPlayers(server, "Server: #deregisterPlayer " + playerName + " ["
+			// + requestId + "]");
 
 			// Removing player from tracker and server
 			ITracker trackerStub = server.getTrackerStub();
 			synchronized (DummyLock.class) {
 				GameState gameState = server.getGameState();
 				if (gameState.getPlayerMap().containsKey(playerName)) {
-					LogUtil.printMsg("Removing " + playerName);
+					// LogUtil.printMsg("Removing " + playerName);
 					server.setPlayerMap(trackerStub.removePlayer(playerName));
 					gameState.removePlayer(playerName);
 				}
 				updateBackupServer(requestId, server);
 			}
 
-			LogUtil.printMsg("Server: Successfully Removed Player: " + playerName + " [" + requestId + "]");
+			// LogUtil.printMsg("Server: Successfully Removed Player: " + playerName + " ["
+			// + requestId + "]");
 		}
 	}
 
@@ -93,7 +98,8 @@ public class ServerRequestHandlerUtil {
 
 		if ((server.isPrimary() || server.isBackup()) && (!completedRequests.contains(requestId))) {
 
-			LogUtil.printPlayers(server, "Server: movePlayer " + playerName + " [" + requestId + "]");
+			// LogUtil.printPlayers(server, "Server: movePlayer " + playerName + " [" +
+			// requestId + "]");
 
 			// Moving the player
 			int dY = 0;
@@ -101,19 +107,19 @@ public class ServerRequestHandlerUtil {
 			switch (direction) {
 			case "1":
 				dX = -1;
-				LogUtil.printMsg(playerName + " Moving West");
+				// LogUtil.printMsg(playerName + " Moving West");
 				break;
 			case "2":
 				dY = 1;
-				LogUtil.printMsg(playerName + " Moving South");
+				// LogUtil.printMsg(playerName + " Moving South");
 				break;
 			case "3":
 				dX = 1;
-				LogUtil.printMsg(playerName + " Moving East");
+				// LogUtil.printMsg(playerName + " Moving East");
 				break;
 			case "4":
 				dY = -1;
-				LogUtil.printMsg(playerName + " Moving North");
+				// LogUtil.printMsg(playerName + " Moving North");
 				break;
 			}
 
@@ -127,7 +133,8 @@ public class ServerRequestHandlerUtil {
 				}
 			}
 
-			LogUtil.printMsg("Server: Player movement complete" + " [" + requestId + "]");
+			// LogUtil.printMsg("Server: Player movement complete" + " [" + requestId +
+			// "]");
 		}
 	}
 
@@ -141,7 +148,8 @@ public class ServerRequestHandlerUtil {
 			try {
 				backupServerStub = server.getBackupServer();
 				if (backupServerStub != null) {
-					LogUtil.printMsg("Server: Trying to update BS: " + backupServerName + " [" + requestId + "]");
+					// LogUtil.printMsg("Server: Trying to update BS: " + backupServerName + " [" +
+					// requestId + "]");
 					backupServerStub.markCompletedRequest(requestId, server.getGameState());
 				}
 			} catch (RemoteException e) {
@@ -152,7 +160,8 @@ public class ServerRequestHandlerUtil {
 				 * mechanism can detect that BS is down, Server detects this while pushing the
 				 * new state
 				 */
-				LogUtil.printMsg("Server: Removing BS -> " + backupServerName + " : NO RESPONSE");
+				// LogUtil.printMsg("Server: Removing BS -> " + backupServerName + " : NO
+				// RESPONSE");
 				server.setPlayerMap(server.getTrackerStub().removePlayer(backupServerName));
 				server.getGameState().removePlayer(backupServerName);
 				updateSuccessful = false;
@@ -166,7 +175,7 @@ public class ServerRequestHandlerUtil {
 	 * @return
 	 */
 	public static boolean markCompletedRequest(UUID requestId) {
-		LogUtil.printMsg("Marking Completed Request: " + requestId.toString());
+		// LogUtil.printMsg("Marking Completed Request: " + requestId.toString());
 		return completedRequests.add(requestId);
 	}
 }

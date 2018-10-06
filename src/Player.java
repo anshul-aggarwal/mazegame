@@ -173,7 +173,7 @@ public class Player implements IPlayer, Serializable {
 				}
 			}
 
-			LogUtil.printMsg("Ping target is " + newPingTarget.getKey());
+			// LogUtil.printMsg("Ping target is " + newPingTarget.getKey());
 		}
 
 		this.pingPlayer = newPingTarget;

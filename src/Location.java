@@ -21,7 +21,6 @@ public class Location implements Serializable {
 	}
 
 	public void setXAndY(int Y, int X) {
-		LogUtil.printMsg("LOCATION SETTER CALLED (" + this.X + "," + this.Y + ") ---> (" + X + "," + Y + ")");
 		this.Y = Y;
 		this.X = X;
 	}

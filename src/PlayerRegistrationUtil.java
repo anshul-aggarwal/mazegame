@@ -44,8 +44,6 @@ public class PlayerRegistrationUtil {
 
 		synchronized (DummyLock.class) {
 
-			LogUtil.printMsg("Trying to register myself");
-
 			/*
 			 * Keep on trying unless registered
 			 */
@@ -118,9 +116,6 @@ public class PlayerRegistrationUtil {
 	 */
 	public static void deregister(String playerName, Player player) throws RemoteException {
 
-		LogUtil.printMsg("Trying to deregister " + playerName);
-		LogUtil.printPlayers(player, "In PlayerRegistrationUtil#deregister");
-
 		UUID requestId = UUID.randomUUID();
 
 		GameState gameState = null;
@@ -131,7 +126,6 @@ public class PlayerRegistrationUtil {
 				gameState = player.getPrimaryServer().deregisterPlayer(requestId, playerName);
 			} catch (RemoteException e1) {
 				try {
-					LogUtil.printMsg("Failed to deregister with PS, trying with BS");
 					gameState = player.getBackupServer().deregisterPlayer(requestId, playerName);
 				} catch (RemoteException | NullPointerException e2) {
 					player.updatePlayerMap();
