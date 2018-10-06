@@ -20,13 +20,15 @@ import javax.swing.border.TitledBorder;
 public class MazeGui extends JFrame {
 
 	private static final long serialVersionUID = 455097013978973213L;
-	// private static final Integer SPLIT_LOCATION = 150;
-	private static final Integer MAZE_WIDTH = 450;
-	private static final Integer MAZE_HEIGHT = 320;
+	private static final Integer SPLIT_LOCATION = 120;
+	private static final Integer WINDOW_WIDTH_MULTIPLIER = 45;
+	private static final Integer WINDOW_HEIGHT_MULTIPLIER = 32;
 
 	// private final Random random = new Random();
 	private final Player player;
 	private final Integer N;
+	private final Integer WINDOW_WIDTH;
+	private final Integer WINDOW_HEIGHT;
 
 	private JList<String> playerInfoPanel;
 	private JTextField[][] mazeData;
@@ -41,11 +43,15 @@ public class MazeGui extends JFrame {
 
 		// Create all Panels and set initial Data
 		this.createMainUI();
-
+		
+		//Set Window Dimensions
+		WINDOW_WIDTH = N*WINDOW_WIDTH_MULTIPLIER;
+		WINDOW_HEIGHT = N*WINDOW_HEIGHT_MULTIPLIER;
+		
 		// Set Defaults
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Player " + playerName + " -- MazeGame");
-		this.setSize(MAZE_WIDTH, MAZE_HEIGHT);
+		this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		//this.pack();
 		this.setLocationRelativeTo(null);
 		// this.setLocation(random.nextInt(1000), random.nextInt(1000));
@@ -66,7 +72,7 @@ public class MazeGui extends JFrame {
 			for (int j = 0; j < N; j++) {
 				this.mazeData[i][j] = new JTextField();
 				this.mazeData[i][j].setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.GRAY));
-				this.mazeData[i][j].setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+				this.mazeData[i][j].setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
 				this.mazeData[i][j].setEditable(false);
 				this.mazeData[i][j].setHorizontalAlignment(SwingConstants.CENTER);
 			}
@@ -102,7 +108,7 @@ public class MazeGui extends JFrame {
 		}
 		JSplitPane containerPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
 		containerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		// containerPanel.setDividerLocation(SPLIT_LOCATION);
+		containerPanel.setDividerLocation(SPLIT_LOCATION);
 		this.add(containerPanel);
 
 		// Update Data
