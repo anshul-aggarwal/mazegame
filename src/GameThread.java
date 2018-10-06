@@ -19,7 +19,7 @@ public class GameThread extends Thread {
 		 */
 		PingUtil ping = new PingUtil(player);
 		ping.start();
-		LogUtil.printMsg("Fixed Pinging");
+		// LogUtil.printMsg("Fixed Pinging");
 
 		/*
 		 * Start GUI
@@ -29,7 +29,7 @@ public class GameThread extends Thread {
 		/*
 		 * Start Game
 		 */
-		LogUtil.printMsg("Started Game");
+		// LogUtil.printMsg("Started Game");
 		try {
 			Scanner sc = new Scanner(System.in);
 			boolean terminateGame = false;
@@ -61,13 +61,13 @@ public class GameThread extends Thread {
 					terminateGame = true;
 					break;
 				default:
-					LogUtil.printMsg("Invalid input. Press 9 to terminate");
+					// LogUtil.printMsg("Invalid input. Press 9 to terminate");
 					break;
 				}
 			}
 			ping.terminate();
 			sc.close();
-			LogUtil.printMsg("Game Over!");
+			System.out.println("Game Over!");
 		} catch (RemoteException e) {
 			System.err.println("Game exception: " + e);
 		}

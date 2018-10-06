@@ -48,7 +48,7 @@ public class Game {
 			System.err.println("Unable to register new player. Exiting ");
 			return;
 		}
-		LogUtil.printMsg("I am Registered");
+		// LogUtil.printMsg("I am Registered");
 
 		/*
 		 * Start Game Thread
