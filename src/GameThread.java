@@ -17,7 +17,7 @@ public class GameThread extends Thread {
 		 * Pinging thread
 		 *
 		 */
-		PingUtil ping = new PingUtil(player);
+		PingThread ping = new PingThread(player);
 		ping.start();
 
 		/*
