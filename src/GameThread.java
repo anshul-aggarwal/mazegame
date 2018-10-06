@@ -39,9 +39,7 @@ public class GameThread extends Thread {
 
 			while (!terminateGame) {
 
-				mazeGui.updateUI();
 				System.out.print(GAME_MENU_MSG);
-				// printGameState(player.getGameState());
 
 				String input;
 				try {
@@ -53,12 +51,14 @@ public class GameThread extends Thread {
 				switch (input) {
 				case "0":
 					PlayerActionUtil.refresh(player);
+					mazeGui.updateUI();
 					break;
 				case "1":
 				case "2":
 				case "3":
 				case "4":
 					PlayerActionUtil.move(player, input);
+					mazeGui.updateUI();
 					break;
 				case "9":
 					PlayerRegistrationUtil.deregister(player.getPlayerName(), player);
