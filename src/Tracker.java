@@ -11,7 +11,6 @@ public class Tracker implements ITracker {
 	private final MazeDimensions mazeDimensions;
 	private LinkedHashMap<String, IPlayer> playerMap;
 
-	public static final int RMI_REGISTRY_PORT = 1099;
 	public static final String TRACKER_STUB_REGISTRY_KEY = "Tracker";
 
 	/**
@@ -61,9 +60,9 @@ public class Tracker implements ITracker {
 		/**
 		 * Read command line arguments
 		 */
-		int port, N, K;
+		int registryPort, N, K;
 		try {
-			port = Integer.parseInt(args[0]);
+			registryPort = Integer.parseInt(args[0]);
 			N = Integer.parseInt(args[1]);
 			K = Integer.parseInt(args[2]);
 		} catch (Exception e) {
@@ -77,12 +76,12 @@ public class Tracker implements ITracker {
 		 */
 		Registry registry = null;
 		try {
-			registry = LocateRegistry.createRegistry(RMI_REGISTRY_PORT);
-			System.out.println("Started RMI Registry at port:" + RMI_REGISTRY_PORT);
+			registry = LocateRegistry.createRegistry(registryPort);
+			System.out.println("Started RMI Registry at port:" + registryPort);
 		} catch (RemoteException e) {
 			try {
-				registry = LocateRegistry.getRegistry(RMI_REGISTRY_PORT);
-				System.out.println("RMI Registry already running at port:" + RMI_REGISTRY_PORT);
+				registry = LocateRegistry.getRegistry(registryPort);
+				System.out.println("RMI Registry already running at port:" + registryPort);
 			} catch (RemoteException e1) {
 				System.err.println("Some unknown error occurred while locating registry. Exiting Program");
 				System.err.println(e1);
@@ -96,7 +95,7 @@ public class Tracker implements ITracker {
 		ITracker stub;
 		try {
 			ITracker tracker = new Tracker(N, K);
-			stub = (ITracker) UnicastRemoteObject.exportObject(tracker, port);
+			stub = (ITracker) UnicastRemoteObject.exportObject(tracker, 0);
 		} catch (RemoteException e) {
 			System.err.println("Error creating Tracker Stub: " + e);
 			return;
