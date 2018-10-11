@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 public class MazeGui extends JFrame {
 
 	private static final long serialVersionUID = 455097013978973213L;
-	private static final Integer SPLIT_LOCATION = 120;
+	private static final Integer SPLIT_LOCATION = 130;
 	private static final Integer WINDOW_WIDTH_MULTIPLIER = 45;
 	private static final Integer WINDOW_HEIGHT_MULTIPLIER = 32;
 	private static final Color TREASURE_COLOR = new Color(205, 255, 153);
