@@ -1,5 +1,5 @@
 # mazegame
-Maze Game - Distributed Systems Assignment 1
+Maze Game
 
 ## Project Structure Overview
 
